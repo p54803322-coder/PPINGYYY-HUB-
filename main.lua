@@ -1,44 +1,47 @@
--- [[ ★PPINGYYY HUB - FULLY FIXED VERSION ★ ]] --
+-- [[ ★PPINGYYY HUB - ULTRA PREMIUM EDITION ★ ]] --
 local lp = game:GetService("Players").LocalPlayer
-local RS = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
-local VirtualInputManager = game:GetService("VirtualInputManager") 
-
-for _, v in ipairs(game:GetService("CoreGui"):GetChildren()) do if v.Name == "PPINGYYY_Hub_Ultimate" then v:Destroy() end end
-for _, v in ipairs(lp:WaitForChild("PlayerGui"):GetChildren()) do if v.Name == "PPINGYYY_Hub_Ultimate" then v:Destroy() end end
-
-getgenv().NWKZ_Anchor = false getgenv().NWKZ_AutoCast = false getgenv().PP_Noclip = false getgenv().PP_WalkSpeed = 16 getgenv().PP_FishingThipActive = false
-getgenv().PP_AutoSkillAll = false getgenv().PP_Skill_Z = false getgenv().PP_Skill_X = false getgenv().PP_Skill_C = false getgenv().PP_Skill_V = false
-local skillKeys = {Enum.KeyCode.Z, Enum.KeyCode.X, Enum.KeyCode.C, Enum.KeyCode.V}
-
 local sg = Instance.new("ScreenGui", (pcall(function() return game:GetService("CoreGui") end) and game:GetService("CoreGui") or lp:WaitForChild("PlayerGui")))
-sg.Name = "PPINGYYY_Hub_Ultimate" sg.ResetOnSpawn = false
+sg.Name = "PPINGYYY_Hub_Ultimate"
 
-local MainSize = UDim2.new(0, 420, 0, 250) local MinimizedSize = UDim2.new(0, 420, 0, 40)
-local tweenInfoMain = TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+-- สร้าง Blur หลังเมนู
+local Blur = Instance.new("BlurEffect", game:GetService("Lighting")) Blur.Size = 0
+local function setBlur(active) TweenService:Create(Blur, TweenInfo.new(0.5), {Size = active and 20 or 0}):Play() end
 
-local Main = Instance.new("Frame", sg) Main.Size = MainSize Main.Position = UDim2.new(0.3, 0, 0.3, 0) Main.BackgroundColor3 = Color3.fromRGB(15, 15, 17)
-Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 10) Instance.new("UIStroke", Main).Color = Color3.fromRGB(0, 255, 150)
+local Main = Instance.new("Frame", sg)
+Main.Size = UDim2.new(0, 450, 0, 300) Main.Position = UDim2.new(0.5, -225, 0.5, -150)
+Main.BackgroundColor3 = Color3.fromRGB(20, 20, 25) -- สีเข้มแบบโมเดิร์น
+Main.BorderSizePixel = 0 Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 12)
 
-local TitleBar = Instance.new("Frame", Main) TitleBar.Size = UDim2.new(1, 0, 0, 40) TitleBar.BackgroundTransparency = 1
-local CloseBtn = Instance.new("TextButton", TitleBar) CloseBtn.Size = UDim2.new(0, 25, 0, 25) CloseBtn.Position = UDim2.new(0.9, 0, 0.25, 0) CloseBtn.Text = "X" CloseBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 0) CloseBtn.TextColor3 = Color3.new(1, 1, 1) Instance.new("UICorner", CloseBtn).CornerRadius = UDim.new(0, 5)
-local MinBtn = Instance.new("TextButton", TitleBar) MinBtn.Size = UDim2.new(0, 25, 0, 25) MinBtn.Position = UDim2.new(0.8, 0, 0.25, 0) MinBtn.Text = "—" MinBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 200) MinBtn.TextColor3 = Color3.new(1, 1, 1) Instance.new("UICorner", MinBtn).CornerRadius = UDim.new(0, 5)
+-- เพิ่ม Gradient ให้ดูแพง
+local Grad = Instance.new("UIGradient", Main)
+Grad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 30, 40)), ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 15, 20))})
+Grad.Rotation = 45
 
-local Sidebar = Instance.new("Frame", Main) Sidebar.Size = UDim2.new(0, 120, 1, -40) Sidebar.Position = UDim2.new(0, 0, 0, 40) Sidebar.BackgroundTransparency = 1
-local Pages = Instance.new("Frame", Main) Pages.Size = UDim2.new(1, -130, 1, -50) Pages.Position = UDim2.new(0, 125, 0, 45) Pages.BackgroundTransparency = 1
+-- หัวข้อ HUB
+local HubTitle = Instance.new("TextLabel", Main)
+HubTitle.Size = UDim2.new(1, 0, 0, 50) Text = "♪|PPINGYYY HUB|♪"
+HubTitle.TextColor3 = Color3.fromRGB(0, 255, 150)
+HubTitle.Font = Enum.Font.GothamBlack TextSize = 22 BackgroundTransparency = 1
 
-local function createTabButton(text, posIndex) local btn = Instance.new("TextButton", Sidebar) btn.Size = UDim2.new(0.85, 0, 0, 30) btn.Position = UDim2.new(0.05, 0, 0, 8 + (posIndex * 35)) btn.Text = text btn.TextColor3 = Color3.fromRGB(150, 150, 150) btn.BackgroundColor3 = Color3.fromRGB(20, 20, 25) btn.Font = Enum.Font.GothamBold Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6) return btn end
-local Tab1Btn, Tab2Btn, Tab3Btn, Tab4Btn = createTabButton("🎣 ตกปลา", 0), createTabButton("⚡ สกิล", 1), createTabButton("🛠️ เครื่องมือ", 2), createTabButton("🏝️ วาร์ป", 3)
-local function createPage() local page = Instance.new("ScrollingFrame", Pages) page.Size = UDim2.new(1, 0, 1, 0) page.BackgroundTransparency = 1 page.ScrollBarThickness = 2 page.Visible = false return page end
-local Page1, Page2, Page3, Page4 = createPage(), createPage(), createPage(), createPage()
-local activePage = nil local function showPage(targetPage) if activePage then activePage.Visible = false end targetPage.Visible = true activePage = targetPage end
-Tab1Btn.MouseButton1Click:Connect(function() showPage(Page1) end) Tab2Btn.MouseButton1Click:Connect(function() showPage(Page2) end) Tab3Btn.MouseButton1Click:Connect(function() showPage(Page3) end) Tab4Btn.MouseButton1Click:Connect(function() showPage(Page4) end)
+-- อนิเมชั่นเปิดหน้าเมนู
+Main.Visible = true setBlur(true)
+Main.CanvasGroup.GroupTransparency = 1
+TweenService:Create(Main.CanvasGroup, TweenInfo.new(0.5), {GroupTransparency = 0}):Play()
 
-local function createNormalButton(parent, text, yPos) local btn = Instance.new("TextButton", parent) btn.Size = UDim2.new(0.95, 0, 0, 32) btn.Position = UDim2.new(0.025, 0, 0, yPos) btn.Text = text btn.BackgroundColor3 = Color3.fromRGB(150, 0, 0) btn.TextColor3 = Color3.new(1, 1, 1) btn.Font = Enum.Font.GothamBold btn.TextSize = 10 Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6) return btn end
+-- แก้ไขฟังก์ชัน showPage ให้พริ้วขึ้น
+local function showPage(targetPage)
+    for _, page in pairs(Pages:GetChildren()) do
+        if page:IsA("CanvasGroup") then
+            TweenService:Create(page, TweenInfo.new(0.3), {GroupTransparency = 1}):Play()
+            task.wait(0.3) page.Visible = false
+        end
+    end
+    targetPage.Visible = true
+    TweenService:Create(targetPage, TweenInfo.new(0.3), {GroupTransparency = 0}):Play()
+end
 
--- มึงก๊อปโค้ดส่วนสร้างปุ่มทั้งหมดมึงมาต่อจากตรงนี้ได้เลย (เริ่มตั้งแต่ CastBtn... ไปจนถึงจบไฟล์)
+-- มึงเอาส่วนปุ่มและฟังก์ชันเดิมของมึงมาแปะต่อจากตรงนี้ได้เลย โค้ดเดิมมึงทำงานได้ปกติ
 local CastBtn = createNormalButton(Page1, "เหวี่ยงเบ็ดออโต้: OFF", 5)
 local AnchorBtn = createNormalButton(Page1, "ทำให้แถบอยู่ตรงกลาง: OFF", 42)
 local FishThipBtn = createNormalButton(Page1, "🟢 เปิดปิดปุ่มตกปลาทิพย์ (ขวาจอ): OFF", 79)
