@@ -1,5 +1,6 @@
--- [[ ★ PPINGYYY HUB - FULL INTEGRATED LOADER ★ ]] --
-repeat task.wait() until game:IsLoaded()
+-- [[ ★ FULL FIXED PPINGYYY HUB (FINAL VERSION) ★ ]] --
+local lp = game:GetService("Players").LocalPlayer
+local RS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 
@@ -8,7 +9,7 @@ for _, v in ipairs(game:GetService("CoreGui"):GetChildren()) do if v.Name == "PP
 local sg = Instance.new("ScreenGui", game:GetService("CoreGui"))
 sg.Name = "PPINGYYY_Hub_Ultimate"
 
--- 2. Loading Screen System (ระบบโหลดที่มึงชอบ)
+-- 2. Loading Screen System (ระบบโหลดแบบเท่ๆ)
 local LoadingFrame = Instance.new("Frame", sg)
 LoadingFrame.Size = UDim2.new(2, 0, 1.5, 0); LoadingFrame.Position = UDim2.new(-0.5, 0, -1.6, 0); LoadingFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0); LoadingFrame.BackgroundTransparency = 0.75; LoadingFrame.ZIndex = 999
 
@@ -44,7 +45,6 @@ TweenService:Create(LoadingFrame, TweenInfo.new(3.5, Enum.EasingStyle.Quart), {P
 TweenService:Create(BarFill, TweenInfo.new(3, Enum.EasingStyle.Linear), {Size = UDim2.new(1, 0, 1, 0)}):Play()
 task.spawn(function() for i = 0, 100 do PercentText.Text = i .. "%"; task.wait(0.03) end end)
 
--- 3. จบโหลดปุ๊บ ค่อยรันสคริปต์หลักมึง
 task.wait(3.5)
 for i = #stars, 1, -1 do local j = math.random(i); stars[i], stars[j] = stars[j], stars[i] end
 for _, star in ipairs(stars) do TweenService:Create(star, TweenInfo.new(0.1), {BackgroundTransparency = 1}):Play(); task.wait(0.005) end
@@ -53,10 +53,10 @@ TweenService:Create(TextLabel, TweenInfo.new(1.5), {TextTransparency = 1}):Play(
 TweenService:Create(BarBg, TweenInfo.new(1.5), {BackgroundTransparency = 1}):Play()
 TweenService:Create(BarFill, TweenInfo.new(1.5), {BackgroundTransparency = 1}):Play()
 TweenService:Create(PercentText, TweenInfo.new(1.5), {TextTransparency = 1}):Play()
-
 task.wait(1.5); LoadingFrame:Destroy()
 
--- สุดท้าย: เสกสคริปต์หลักมึงขึ้นมา
+-- 3. สคริปต์หลักมึง (ที่มึงบอกว่ามีฟังก์ชันนั่นนี่) เอามาต่อจากตรงนี้ได้เลย!
+-- มั่นใจว่าตรงท้ายสคริปต์หลักมึงมี end ปิดครบทุกฟังก์ชันนะเพื่อน!
 -- [[ ★PPINGYYY HUB - FULLY FIXED VERSION ★ ]] --
 local lp = game:GetService("Players").LocalPlayer
 local RS = game:GetService("ReplicatedStorage")
@@ -82,7 +82,6 @@ local Main = Instance.new("Frame", sg) Main.Size = MainSize Main.Position = UDim
 Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 10) Instance.new("UIStroke", Main).Color = Color3.fromRGB(0, 255, 150)
 
 local TitleBar = Instance.new("Frame", Main) TitleBar.Size = UDim2.new(1, 0, 0, 40) TitleBar.BackgroundTransparency = 1
--- เพิ่มดาวให้แล้วนะเพื่อนรัก
 local TitleText = Instance.new("TextLabel", TitleBar) TitleText.Size = UDim2.new(1, 0, 1, 0) TitleText.Text = "★ PPINGYYY HUB ★" TitleText.TextColor3 = Color3.fromRGB(0, 255, 150) TitleText.Font = Enum.Font.GothamBold TitleText.TextSize = 14 TitleText.BackgroundTransparency = 1
 
 local CloseBtn = Instance.new("TextButton", TitleBar) CloseBtn.Size = UDim2.new(0, 25, 0, 25) CloseBtn.Position = UDim2.new(0.9, 0, 0.25, 0) CloseBtn.Text = "X" CloseBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 0) CloseBtn.TextColor3 = Color3.new(1, 1, 1) Instance.new("UICorner", CloseBtn).CornerRadius = UDim.new(0, 5)
@@ -91,16 +90,170 @@ local MinBtn = Instance.new("TextButton", TitleBar) MinBtn.Size = UDim2.new(0, 2
 local Sidebar = Instance.new("Frame", Main) Sidebar.Size = UDim2.new(0, 120, 1, -40) Sidebar.Position = UDim2.new(0, 0, 0, 40) Sidebar.BackgroundTransparency = 1
 local Pages = Instance.new("Frame", Main) Pages.Size = UDim2.new(1, -130, 1, -50) Pages.Position = UDim2.new(0, 125, 0, 45) Pages.BackgroundTransparency = 1
 
-local function createTabButton(text, posIndex) local btn = Instance.new("TextButton", Sidebar) btn.Size = UDim2.new(0.85, 0, 0, 30) btn.Position = UDim2.new(0.05, 0, 0, 8 + (posIndex * 35)) btn.Text = text btn.TextColor3 = Color3.fromRGB(150, 150, 150) btn.BackgroundColor3 = Color3.fromRGB(20, 20, 25) btn.Font = Enum.Font.GothamBold Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6) return btn end
-local Tab1Btn, Tab2Btn, Tab3Btn, Tab4Btn = createTabButton("🎣 ตกปลา", 0), createTabButton("⚡ สกิล", 1), createTabButton("🛠️ เครื่องมือ", 2), createTabButton("🏝️ วาร์ป", 3)
+local function createTabButton(text, posIndex) local btn = Instance.new("TextButton", Sidebar) btn.Size = UDim2.new(0.85, 0, 0, 30) btn.Position = UDim2.new(0.05, 0, 0, 4 + (posIndex * 34)) btn.Text = text btn.TextColor3 = Color3.fromRGB(150, 150, 150) btn.BackgroundColor3 = Color3.fromRGB(20, 20, 25) btn.Font = Enum.Font.GothamBold btn.TextSize = 11 Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6) return btn end
+local Tab1Btn, Tab2Btn, Tab3Btn, Tab4Btn, Tab5Btn = createTabButton("🎣 ตกปลา", 0), createTabButton("⚡ สกิล", 1), createTabButton("🛠️ เครื่องมือ", 2), createTabButton("🏝️ วาร์ป", 3), createTabButton("🥷 พ่อค้าลับ", 4)
+
 local function createPage() local page = Instance.new("ScrollingFrame", Pages) page.Size = UDim2.new(1, 0, 1, 0) page.BackgroundTransparency = 1 page.ScrollBarThickness = 2 page.Visible = false return page end
-local Page1, Page2, Page3, Page4 = createPage(), createPage(), createPage(), createPage()
+local Page1, Page2, Page3, Page4, Page5 = createPage(), createPage(), createPage(), createPage(), createPage()
 local activePage = nil local function showPage(targetPage) if activePage then activePage.Visible = false end targetPage.Visible = true activePage = targetPage end
-Tab1Btn.MouseButton1Click:Connect(function() showPage(Page1) end) Tab2Btn.MouseButton1Click:Connect(function() showPage(Page2) end) Tab3Btn.MouseButton1Click:Connect(function() showPage(Page3) end) Tab4Btn.MouseButton1Click:Connect(function() showPage(Page4) end)
+Tab1Btn.MouseButton1Click:Connect(function() showPage(Page1) end) 
+Tab2Btn.MouseButton1Click:Connect(function() showPage(Page2) end) 
+Tab3Btn.MouseButton1Click:Connect(function() showPage(Page3) end) 
+Tab4Btn.MouseButton1Click:Connect(function() showPage(Page4) end)
+Tab5Btn.MouseButton1Click:Connect(function() showPage(Page5) end)
 
 local function createNormalButton(parent, text, yPos) local btn = Instance.new("TextButton", parent) btn.Size = UDim2.new(0.95, 0, 0, 32) btn.Position = UDim2.new(0.025, 0, 0, yPos) btn.Text = text btn.BackgroundColor3 = Color3.fromRGB(150, 0, 0) btn.TextColor3 = Color3.new(1, 1, 1) btn.Font = Enum.Font.GothamBold btn.TextSize = 10 Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6) return btn end
 
--- มึงก๊อปโค้ดส่วนสร้างปุ่มทั้งหมดมึงมาต่อจากตรงนี้ได้เลย (เริ่มตั้งแต่ CastBtn... ไปจนถึงจบไฟล์)
+-- ==========================================================
+-- 🥷 ระบบหมวดหมู่พ่อค้าลับ (Page 5)
+-- ==========================================================
+local MerchantTpBtn = createNormalButton(Page5, "🥷 วาปไปหาพ่อค้าลับ (Auto Scan)", 5)
+MerchantTpBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 100)
+
+local function TeleportToSecretMerchant()
+    local char = lp.Character or lp.CharacterAdded:Wait()
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+    
+    local found = false
+    -- วนหา NPC พ่อค้าใน Workspace
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if obj:IsA("Model") and (string.find(string.lower(obj.Name), "merchant") or string.find(string.lower(obj.Name), "traveling") or string.find(string.lower(obj.Name), "secret")) then
+            local targetHrp = obj:FindFirstChild("HumanoidRootPart") or obj:FindFirstChild("PrimaryPart")
+            if targetHrp then
+                hrp.CFrame = targetHrp.CFrame * CFrame.new(0, 0, -3)
+                found = true
+                print("★ เจอพ่อค้าลับ! วาปสำเร็จ: " .. obj.Name)
+                break
+            end
+        end
+    end
+    
+    if not found then
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "★ PPINGYYY HUB ★",
+            Text = "ไม่พบพ่อค้าลับในเซิร์ฟ! (มันยังไม่สปอว์นหรือซ่อนอยู่)",
+            Duration = 5
+        })
+    end
+end
+
+MerchantTpBtn.MouseButton1Click:Connect(function()
+    TeleportToSecretMerchant()
+end)
+
+local CheckSpotBtn = createNormalButton(Page5, "🌊 วาปส่องจุดเกิดสำรอง (หลังน้ำตก/ถ้ำ)", 45)
+CheckSpotBtn.BackgroundColor3 = Color3.fromRGB(100, 50, 200)
+
+CheckSpotBtn.MouseButton1Click:Connect(function()
+    -- วาปเช็กพิกัดจุดซ่อนยอดฮิต (ปรับแก้พิกัดได้ตามจริง)
+    local char = lp.Character or lp.CharacterAdded:Wait()
+    if char and char:FindFirstChild("HumanoidRootPart") then
+        char.HumanoidRootPart.CFrame = CFrame.new(0, 50, -500) -- จุดเช็กสำรอง
+    end
+end)
+
+showPage(Page1) -- เปิดมาหน้าแรกสุดไว้ก่อน
+
+-- มึงเอาปุ่มเก่าๆ ของมึง (CastBtn, SkillBtn ฯลฯ) มาวางต่อจากตรงนี้ลงไปได้เลยเพื่อนรัก!
+-- [[ ★PPINGYYY HUB - FULL ANIMATION VERSION (TAB + MINIMIZE) ★ ]] --
+local lp = game:GetService("Players").LocalPlayer
+local RS = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local VirtualInputManager = game:GetService("VirtualInputManager") 
+
+local TweenService = game:GetService("TweenService")
+
+for _, v in ipairs(game:GetService("CoreGui"):GetChildren()) do if v.Name == "PPINGYYY_Hub_Ultimate" then v:Destroy() end end
+for _, v in ipairs(lp:WaitForChild("PlayerGui"):GetChildren()) do if v.Name == "PPINGYYY_Hub_Ultimate" then v:Destroy() end end
+
+getgenv().NWKZ_Anchor = false getgenv().NWKZ_AutoCast = false getgenv().PP_Noclip = false getgenv().PP_WalkSpeed = 16 getgenv().PP_FishingThipActive = false
+getgenv().PP_AutoSkillAll = false getgenv().PP_Skill_Z = false getgenv().PP_Skill_X = false getgenv().PP_Skill_C = false getgenv().PP_Skill_V = false
+local skillKeys = {Enum.KeyCode.Z, Enum.KeyCode.X, Enum.KeyCode.C, Enum.KeyCode.V}
+
+local sg = Instance.new("ScreenGui", (pcall(function() return game:GetService("CoreGui") end) and game:GetService("CoreGui") or lp:WaitForChild("PlayerGui")))
+sg.Name = "PPINGYYY_Hub_Ultimate" sg.ResetOnSpawn = false
+
+local MainSize = UDim2.new(0, 420, 0, 250) local MinimizedSize = UDim2.new(0, 420, 0, 40)
+
+local Main = Instance.new("Frame", sg) Main.Size = MainSize Main.Position = UDim2.new(0.3, 0, 0.3, 0) Main.BackgroundColor3 = Color3.fromRGB(15, 15, 17)
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 10) Instance.new("UIStroke", Main).Color = Color3.fromRGB(0, 255, 150)
+
+local TitleBar = Instance.new("Frame", Main) TitleBar.Size = UDim2.new(1, 0, 0, 40) TitleBar.BackgroundTransparency = 1
+local TitleText = Instance.new("TextLabel", TitleBar) TitleText.Size = UDim2.new(1, 0, 1, 0) TitleText.Text = "★ PPINGYYY HUB ★" TitleText.TextColor3 = Color3.fromRGB(0, 255, 150) TitleText.Font = Enum.Font.GothamBold TitleText.TextSize = 14 TitleText.BackgroundTransparency = 1
+
+local CloseBtn = Instance.new("TextButton", TitleBar) CloseBtn.Size = UDim2.new(0, 25, 0, 25) CloseBtn.Position = UDim2.new(0.9, 0, 0.25, 0) CloseBtn.Text = "X" CloseBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 0) CloseBtn.TextColor3 = Color3.new(1, 1, 1) Instance.new("UICorner", CloseBtn).CornerRadius = UDim.new(0, 5)
+local MinBtn = Instance.new("TextButton", TitleBar) MinBtn.Size = UDim2.new(0, 25, 0, 25) MinBtn.Position = UDim2.new(0.8, 0, 0.25, 0) MinBtn.Text = "—" MinBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 200) MinBtn.TextColor3 = Color3.new(1, 1, 1) Instance.new("UICorner", MinBtn).CornerRadius = UDim.new(0, 5)
+
+local Sidebar = Instance.new("Frame", Main) Sidebar.Size = UDim2.new(0, 120, 1, -40) Sidebar.Position = UDim2.new(0, 0, 0, 40) Sidebar.BackgroundTransparency = 1
+local Pages = Instance.new("Frame", Main) Pages.Size = UDim2.new(1, -130, 1, -50) Pages.Position = UDim2.new(0, 125, 0, 45) Pages.BackgroundTransparency = 1
+
+local tabButtons = {}
+local function createTabButton(text, posIndex) 
+    local btn = Instance.new("TextButton", Sidebar) 
+    btn.Size = UDim2.new(0.85, 0, 0, 30) 
+    btn.Position = UDim2.new(0.05, 0, 0, 4 + (posIndex * 34)) 
+    btn.Text = text 
+    btn.TextColor3 = Color3.fromRGB(150, 150, 150) 
+    btn.BackgroundColor3 = Color3.fromRGB(20, 20, 25) 
+    btn.Font = Enum.Font.GothamBold 
+    btn.TextSize = 11 
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6) 
+    table.insert(tabButtons, btn)
+    return btn 
+end
+
+local Tab1Btn, Tab2Btn, Tab3Btn, Tab4Btn, Tab5Btn = createTabButton("🎣 ตกปลา", 0), createTabButton("⚡ สกิล", 1), createTabButton("🛠️ เครื่องมือ", 2), createTabButton("🏝️ วาร์ป", 3), createTabButton("📍 พ่อค้าลับ", 4)
+
+local function createPage() 
+    local page = Instance.new("ScrollingFrame", Pages) 
+    page.Size = UDim2.new(1, 0, 1, 0) 
+    page.BackgroundTransparency = 1 
+    page.ScrollBarThickness = 2 
+    page.Visible = false 
+    return page 
+end
+
+local Page1, Page2, Page3, Page4, Page5 = createPage(), createPage(), createPage(), createPage(), createPage()
+local activePage = nil 
+
+local tweenInfoTab = TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+
+-- 🔴 ฟังก์ชันเลือก Tab พร้อมแอนิเมชันปุ่ม
+local function selectTab(selectedBtn, targetPage)
+    for _, btn in ipairs(tabButtons) do
+        if btn == selectedBtn then
+            TweenService:Create(btn, tweenInfoTab, {
+                BackgroundColor3 = Color3.fromRGB(0, 180, 100),
+                TextColor3 = Color3.fromRGB(255, 255, 255),
+                Size = UDim2.new(0.92, 0, 0, 30)
+            }):Play()
+        else
+            TweenService:Create(btn, tweenInfoTab, {
+                BackgroundColor3 = Color3.fromRGB(20, 20, 25),
+                TextColor3 = Color3.fromRGB(150, 150, 150),
+                Size = UDim2.new(0.85, 0, 0, 30)
+            }):Play()
+        end
+    end
+
+    if activePage and activePage ~= targetPage then 
+        activePage.Visible = false 
+    end 
+    
+    targetPage.Visible = true 
+    activePage = targetPage
+end
+
+Tab1Btn.MouseButton1Click:Connect(function() selectTab(Tab1Btn, Page1) end) 
+Tab2Btn.MouseButton1Click:Connect(function() selectTab(Tab2Btn, Page2) end) 
+Tab3Btn.MouseButton1Click:Connect(function() selectTab(Tab3Btn, Page3) end) 
+Tab4Btn.MouseButton1Click:Connect(function() selectTab(Tab4Btn, Page4) end)
+Tab5Btn.MouseButton1Click:Connect(function() selectTab(Tab5Btn, Page5) end)
+
+local function createNormalButton(parent, text, yPos) local btn = Instance.new("TextButton", parent) btn.Size = UDim2.new(0.95, 0, 0, 32) btn.Position = UDim2.new(0.025, 0, 0, yPos) btn.Text = text btn.BackgroundColor3 = Color3.fromRGB(150, 0, 0) btn.TextColor3 = Color3.new(1, 1, 1) btn.Font = Enum.Font.GothamBold btn.TextSize = 10 Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6) return btn end
+
 local CastBtn = createNormalButton(Page1, "เหวี่ยงเบ็ดออโต้: OFF", 5)
 local AnchorBtn = createNormalButton(Page1, "ทำให้แถบอยู่ตรงกลาง: OFF", 42)
 local FishThipBtn = createNormalButton(Page1, "🟢 เปิดปิดปุ่มตกปลาทิพย์ (ขวาจอ): OFF", 79)
@@ -176,7 +329,6 @@ FlyBtn.Font = Enum.Font.GothamBold
 FlyBtn.TextSize = 10
 Instance.new("UICorner", FlyBtn).CornerRadius = UDim.new(0, 6)
 
--- ฟังก์ชันวาร์ป
 local function createTeleportButton(parent, name, x, y, z, yPos)
     local btn = Instance.new("TextButton", parent)
     btn.Size = UDim2.new(0.95, 0, 0, 32)
@@ -203,6 +355,29 @@ createTeleportButton(Page4, "เกาะต้นมะพร้าว", 1434, 
 createTeleportButton(Page4, "เกาะแห่งฤดูใบไม้ร่วง", 1243, 6, 1393, 264)
 createTeleportButton(Page4, "เกาะนักล่าบอส", 1543, 46, -51, 301)
 
+local function createMerchantTP(name, x, y, z, yPos)
+    local btn = Instance.new("TextButton", Page5)
+    btn.Size = UDim2.new(0.95, 0, 0, 32)
+    btn.Position = UDim2.new(0.025, 0, 0, yPos)
+    btn.Text = "📍 " .. name
+    btn.BackgroundColor3 = Color3.fromRGB(0, 150, 100)
+    btn.TextColor3 = Color3.new(1, 1, 1)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 10
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
+    btn.MouseButton1Click:Connect(function()
+        if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+            lp.Character.HumanoidRootPart.CFrame = CFrame.new(x, y, z)
+        end
+    end)
+end
+
+createMerchantTP("พ่อค้าลับ - จุดที่ 1", -33, 8, 1606, 5)
+createMerchantTP("พ่อค้าลับ - จุดที่ 2", -1496, 9, 1134, 42)
+createMerchantTP("พ่อค้าลับ - จุดที่ 3 (อัปเดต)", -1495, 9, 1127, 79)
+createMerchantTP("พ่อค้าลับ - จุดที่ 4", 1293, 8, 1428, 116)
+createMerchantTP("พ่อค้าลับ - จุดที่ 5", 1592, 47, -44, 153)
+
 local RealFishBtn = Instance.new("TextButton", sg)
 RealFishBtn.Size = UDim2.new(0, 95, 0, 95)
 RealFishBtn.Position = UDim2.new(0.85, 0, 0.40, 0)
@@ -226,10 +401,29 @@ SpeedDownBtn.MouseButton1Click:Connect(function() getgenv().PP_WalkSpeed = math.
 FlyBtn.MouseButton1Click:Connect(function() pcall(function() loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-FLY-GUI-V11-205450"))() end); FlyBtn.Text = "🚀 FLY LOADED!"; task.wait(0.8); FlyBtn.Text = "🚀 FLY GUI (เปิดโปรบิน)" end)
 RealFishBtn.MouseButton1Click:Connect(function() pcall(function() if RS:FindFirstChild("Events") and RS.Events:FindFirstChild("Fishing") then RS.Events.Fishing:FireServer() elseif RS:FindFirstChild("Fishing") then RS.Fishing:FireServer() end end); RealFishBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255); task.wait(0.05); RealFishBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 120) end)
 
-showPage(Page1, Tab1Btn)
+selectTab(Tab1Btn, Page1)
 
 local isMinimized = false
-MinBtn.MouseButton1Click:Connect(function() isMinimized = not isMinimized; if isMinimized then Main.ClipsDescendants = true; TweenService:Create(Main, tweenInfoMain, {Size = MinimizedSize}):Play(); MinBtn.Text = "⬜" else TweenService:Create(Main, tweenInfoMain, {Size = MainSize}):Play(); task.wait(0.22); Main.ClipsDescendants = false; MinBtn.Text = "—" end end)
+local tweenInfoResize = TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+
+MinBtn.MouseButton1Click:Connect(function() 
+    isMinimized = not isMinimized 
+    if isMinimized then 
+        -- ซ่อน Sidebar และ Page ทั้งหมดตอนย่อ เพื่อไม่ให้มันลอยมากวนใจ
+        Sidebar.Visible = false
+        if activePage then activePage.Visible = false end
+        
+        TweenService:Create(Main, tweenInfoResize, {Size = MinimizedSize}):Play()
+        MinBtn.Text = "★" 
+    else 
+        TweenService:Create(Main, tweenInfoResize, {Size = MainSize}):Play()
+        task.wait(0.15) -- รอให้ขยายเสร็จก่อนค่อยเปิด Sidebar กับ Page กลับมา
+        Sidebar.Visible = true
+        if activePage then activePage.Visible = true end
+        MinBtn.Text = "—" 
+    end 
+end)
+
 CloseBtn.MouseButton1Click:Connect(function() getgenv().NWKZ_Anchor = false; getgenv().NWKZ_AutoCast = false; getgenv().PP_Noclip = false; getgenv().PP_FishingThipActive = false; getgenv().PP_AutoSkillAll = false; getgenv().PP_Skill_Z = false; getgenv().PP_Skill_X = false; getgenv().PP_Skill_C = false; getgenv().PP_Skill_V = false; RealFishBtn.Visible = false; sg:Destroy() end)
 
 task.spawn(function() while task.wait(0.1) do pcall(function() if getgenv().PP_AutoSkillAll then local randomKey = skillKeys[math.random(1, #skillKeys)]; VirtualInputManager:SendKeyEvent(true, randomKey, false, game); task.wait(0.02); VirtualInputManager:SendKeyEvent(false, randomKey, false, game) end; if getgenv().PP_Skill_Z then VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Z, false, game); task.wait(0.02); VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Z, false, game) end; if getgenv().PP_Skill_X then VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.X, false, game); task.wait(0.02); VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.X, false, game) end; if getgenv().PP_Skill_C then VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.C, false, game); task.wait(0.02); VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.C, false, game) end; if getgenv().PP_Skill_V then VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.V, false, game); task.wait(0.02); VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.V, false, game) end end) end end)
