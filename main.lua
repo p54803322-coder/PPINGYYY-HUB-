@@ -1,3 +1,62 @@
+-- [[ ★ FULL FIXED PPINGYYY HUB (FINAL VERSION) ★ ]] --
+local lp = game:GetService("Players").LocalPlayer
+local RS = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+
+-- 1. ล้างของเก่า
+for _, v in ipairs(game:GetService("CoreGui"):GetChildren()) do if v.Name == "PPINGYYY_Hub_Ultimate" then v:Destroy() end end
+local sg = Instance.new("ScreenGui", game:GetService("CoreGui"))
+sg.Name = "PPINGYYY_Hub_Ultimate"
+
+-- 2. Loading Screen System (ระบบโหลดแบบเท่ๆ)
+local LoadingFrame = Instance.new("Frame", sg)
+LoadingFrame.Size = UDim2.new(2, 0, 1.5, 0); LoadingFrame.Position = UDim2.new(-0.5, 0, -1.6, 0); LoadingFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0); LoadingFrame.BackgroundTransparency = 0.75; LoadingFrame.ZIndex = 999
+
+local stars = {}
+for i = 1, 80 do
+    local star = Instance.new("Frame", LoadingFrame)
+    local s = math.random(2, 4); star.Size = UDim2.new(0, s, 0, s); star.Position = UDim2.new(math.random(), 0, math.random(), 0); star.BackgroundColor3 = Color3.fromRGB(255, 255, 255); star.BorderSizePixel = 0; star.BackgroundTransparency = math.random(3, 8) / 10; Instance.new("UICorner", star).CornerRadius = UDim.new(1, 0)
+    table.insert(stars, star)
+    task.spawn(function()
+        while star.Parent do
+            local nextPos = UDim2.new(math.clamp(star.Position.X.Scale + (math.random(-5, 5)/100), 0, 1), 0, math.clamp(star.Position.Y.Scale + (math.random(-5, 5)/100), 0, 1), 0)
+            TweenService:Create(star, TweenInfo.new(math.random(3, 6)), {Position = nextPos}):Play(); task.wait(math.random(3, 6))
+        end
+    end)
+end
+
+local TextLabel = Instance.new("TextLabel", LoadingFrame)
+TextLabel.Size = UDim2.new(0, 500, 0, 100); TextLabel.Position = UDim2.new(0.5, -250, 0.45, 0); TextLabel.Text = "★ PPINGYYYHUB ★"; TextLabel.TextColor3 = Color3.fromRGB(0, 255, 150); TextLabel.Font = Enum.Font.GothamBold; TextLabel.TextSize = 40; TextLabel.BackgroundTransparency = 1; TextLabel.TextTransparency = 1; TweenService:Create(TextLabel, TweenInfo.new(2), {TextTransparency = 0}):Play()
+
+task.spawn(function()
+    local startPos = TextLabel.Position; local t = 0
+    while TextLabel.Parent do
+        t = t + RunService.RenderStepped:Wait()
+        TextLabel.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + math.sin(t*1.5)*8, startPos.Y.Scale, startPos.Y.Offset + math.cos(t*1.2)*12); TextLabel.Rotation = math.sin(t*1.2)*4
+    end
+end)
+
+local BarBg = Instance.new("Frame", LoadingFrame); BarBg.Size = UDim2.new(0, 300, 0, 10); BarBg.Position = UDim2.new(0.5, -150, 0.6, 0); BarBg.BackgroundColor3 = Color3.fromRGB(255, 255, 255); BarBg.BorderSizePixel = 0
+local BarFill = Instance.new("Frame", BarBg); BarFill.Size = UDim2.new(0, 0, 1, 0); BarFill.BackgroundColor3 = Color3.fromRGB(0, 255, 150); BarFill.BorderSizePixel = 0
+local PercentText = Instance.new("TextLabel", BarBg); PercentText.Size = UDim2.new(1, 0, 0, 30); PercentText.Position = UDim2.new(0, 0, 1, 5); PercentText.Text = "0%"; PercentText.TextColor3 = Color3.fromRGB(255, 255, 255); PercentText.Font = Enum.Font.GothamBold; PercentText.BackgroundTransparency = 1
+
+TweenService:Create(LoadingFrame, TweenInfo.new(3.5, Enum.EasingStyle.Quart), {Position = UDim2.new(-0.5, 0, -0.25, 0)}):Play()
+TweenService:Create(BarFill, TweenInfo.new(3, Enum.EasingStyle.Linear), {Size = UDim2.new(1, 0, 1, 0)}):Play()
+task.spawn(function() for i = 0, 100 do PercentText.Text = i .. "%"; task.wait(0.03) end end)
+
+task.wait(3.5)
+for i = #stars, 1, -1 do local j = math.random(i); stars[i], stars[j] = stars[j], stars[i] end
+for _, star in ipairs(stars) do TweenService:Create(star, TweenInfo.new(0.1), {BackgroundTransparency = 1}):Play(); task.wait(0.005) end
+TweenService:Create(LoadingFrame, TweenInfo.new(1.5, Enum.EasingStyle.Quart), {Position = UDim2.new(math.random(-1, 0), 0, 1.5, 0), BackgroundTransparency = 1}):Play()
+TweenService:Create(TextLabel, TweenInfo.new(1.5), {TextTransparency = 1}):Play()
+TweenService:Create(BarBg, TweenInfo.new(1.5), {BackgroundTransparency = 1}):Play()
+TweenService:Create(BarFill, TweenInfo.new(1.5), {BackgroundTransparency = 1}):Play()
+TweenService:Create(PercentText, TweenInfo.new(1.5), {TextTransparency = 1}):Play()
+task.wait(1.5); LoadingFrame:Destroy()
+
+-- 3. สคริปต์หลักมึง (ที่มึงบอกว่ามีฟังก์ชันนั่นนี่) เอามาต่อจากตรงนี้ได้เลย!
+-- มั่นใจว่าตรงท้ายสคริปต์หลักมึงมี end ปิดครบทุกฟังก์ชันนะเพื่อน!
 -- [[ ★PPINGYYY HUB - BASE GUI TEMPLATE ★ ]] --
 local lp = game:GetService("Players").LocalPlayer
 local UserInputService = game:GetService("UserInputService")
@@ -389,91 +448,4 @@ task.spawn(function()
                 local pos = lp.Character.HumanoidRootPart.Position
                 CoordLabel.Text = string.format("📍 พิกัด: (%.1f, %.1f, %.1f)", pos.X, pos.Y, pos.Z)
             end
-        end)
-    end
-end)
-
-local TpSavedBtn = createNormalButton(Page6, "🚀 วาปไปจุดที่เซฟ/ก๊อปไว้", 45)
-TpSavedBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 200)
-TpSavedBtn.MouseButton1Click:Connect(function()
-    if getgenv().PP_SavedCFrame and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
-        lp.Character.HumanoidRootPart.CFrame = getgenv().PP_SavedCFrame
-        TpSavedBtn.Text = "✨ วาร์ปสำเร็จ!"
-        task.wait(1)
-        TpSavedBtn.Text = "🚀 วาปไปจุดที่เซฟ/ก๊อปไว้"
-    else
-        TpSavedBtn.Text = "❌ ยังไม่ได้เซฟพิกัด!"
-        task.wait(1)
-        TpSavedBtn.Text = "🚀 วาปไปจุดที่เซฟ/ก๊อปไว้"
-    end
-end)
-
-local CopyKeyBtn = createNormalButton(Page6, "📋 ก๊อปพิกัดปัจจุบันลงแป้นพิมพ์", 85)
-CopyKeyBtn.BackgroundColor3 = Color3.fromRGB(150, 100, 0)
-CopyKeyBtn.MouseButton1Click:Connect(function()
-    pcall(function()
-        if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
-            local p = lp.Character.HumanoidRootPart.CFrame
-            getgenv().PP_SavedCFrame = p 
-            local str = string.format("CFrame.new(%.2f, %.2f, %.2f)", p.X, p.Y, p.Z)
-            if setclipboard then
-                setclipboard(str)
-                CopyKeyBtn.Text = "✅ คัดลอกใส่แป้นพิมพ์แล้ว!"
-            else
-                CopyKeyBtn.Text = "❌ อุปกรณ์ไม่รองรับคลิปบอร์ด"
-            end
-            task.wait(1.2)
-            CopyKeyBtn.Text = "📋 ก๊อปพิกัดปัจจุบันลงแป้นพิมพ์"
-        end
-    end)
-end)
-
-local RealFishBtn = Instance.new("TextButton", sg)
-RealFishBtn.Size = UDim2.new(0, 95, 0, 95)
-RealFishBtn.Position = UDim2.new(0.85, 0, 0.40, 0)
-RealFishBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 120)
-RealFishBtn.Text = "ตกปลา\nทิพย์"
-RealFishBtn.TextColor3 = Color3.fromRGB(10, 10, 15)
-RealFishBtn.Font = Enum.Font.GothamBold
-RealFishBtn.TextSize = 16
-RealFishBtn.Visible = false
-RealFishBtn.BorderSizePixel = 0
-Instance.new("UICorner", RealFishBtn).CornerRadius = UDim.new(1, 0)
-
-CastBtn.MouseButton1Click:Connect(function() getgenv().NWKZ_AutoCast = not getgenv().NWKZ_AutoCast; CastBtn.Text = "AUTO CAST (เหวี่ยงเบ็ดออโต้): " .. (getgenv().NWKZ_AutoCast and "ON" or "OFF"); CastBtn.BackgroundColor3 = getgenv().NWKZ_AutoCast and Color3.fromRGB(0, 150, 80) or Color3.fromRGB(150, 0, 0) end)
-AnchorBtn.MouseButton1Click:Connect(function() getgenv().NWKZ_Anchor = not getgenv().NWKZ_Anchor; AnchorBtn.Text = "ANCHOR (ทำให้แถบอยู่ตรงกลาง): " .. (getgenv().NWKZ_Anchor and "ON" or "OFF"); AnchorBtn.BackgroundColor3 = getgenv().NWKZ_Anchor and Color3.fromRGB(0, 150, 80) or Color3.fromRGB(150, 0, 0) end)
-FishThipBtn.MouseButton1Click:Connect(function() getgenv().PP_FishingThipActive = not getgenv().PP_FishingThipActive; RealFishBtn.Visible = getgenv().PP_FishingThipActive; FishThipBtn.Text = "🟢 เปิดปิดปุ่มตกปลาทิพย์ (ขวาจอ): " .. (getgenv().PP_FishingThipActive and "ON" or "OFF"); FishThipBtn.BackgroundColor3 = getgenv().PP_FishingThipActive and Color3.fromRGB(0, 150, 80) or Color3.fromRGB(150, 0, 0) end)
-SkillAllBtn.MouseButton1Click:Connect(function() getgenv().PP_AutoSkillAll = not getgenv().PP_AutoSkillAll; SkillAllBtn.Text = "AUTO ALL SKILLS (รวมกดทุกสกิล): " .. (getgenv().PP_AutoSkillAll and "ON" or "OFF"); SkillAllBtn.BackgroundColor3 = getgenv().PP_AutoSkillAll and Color3.fromRGB(0, 150, 80) or Color3.fromRGB(150, 0, 0) end)
-NoclipBtn.MouseButton1Click:Connect(function() getgenv().PP_Noclip = not getgenv().PP_Noclip; NoclipBtn.Text = "NOCLIP (ทะลุกำแพง): " .. (getgenv().PP_Noclip and "ON" or "OFF"); NoclipBtn.BackgroundColor3 = getgenv().PP_Noclip and Color3.fromRGB(0, 150, 80) or Color3.fromRGB(150, 0, 0) end)
-SellBtn.MouseButton1Click:Connect(function() pcall(function() if RS:FindFirstChild("Events") and RS.Events:FindFirstChild("SellFish") then RS.Events.SellFish:FireServer("All") elseif RS:FindFirstChild("SellFish") then RS.SellFish:FireServer("All") end end); SellBtn.Text = "SOLD OUT!"; task.wait(0.4); SellBtn.Text = "💰 ขายปลาทั้งหมด" end)
-SpeedUpBtn.MouseButton1Click:Connect(function() getgenv().PP_WalkSpeed = math.clamp(getgenv().PP_WalkSpeed + 10, 16, 250); SpeedLabel.Text = "ความเร็วในการเดิน: " .. tostring(getgenv().PP_WalkSpeed) end)
-SpeedDownBtn.MouseButton1Click:Connect(function() getgenv().PP_WalkSpeed = math.clamp(getgenv().PP_WalkSpeed - 10, 16, 250); SpeedLabel.Text = "ความเร็วในการเดิน: " .. tostring(getgenv().PP_WalkSpeed) end)
-FlyBtn.MouseButton1Click:Connect(function() pcall(function() loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-FLY-GUI-V11-205450"))() end); FlyBtn.Text = "🚀 FLY LOADED!"; task.wait(0.8); FlyBtn.Text = "เปิดเมนูบิน" end)
-RealFishBtn.MouseButton1Click:Connect(function() pcall(function() if RS:FindFirstChild("Events") and RS.Events:FindFirstChild("Fishing") then RS.Events.Fishing:FireServer() elseif RS:FindFirstChild("Fishing") then RS.Fishing:FireServer() end end); RealFishBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255); task.wait(0.05); RealFishBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 120) end)
-
-selectTab(Tab1Btn, Page1)
-
-local isMinimized = false
-local tweenInfoResize = TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
-
-MinBtn.MouseButton1Click:Connect(function() 
-    isMinimized = not isMinimized 
-    if isMinimized then 
-        Sidebar.Visible = false
-        if activePage then activePage.Visible = false end
-        TweenService:Create(Main, tweenInfoResize, {Size = MinimizedSize}):Play()
-        MinBtn.Text = "⬜" 
-    else 
-        TweenService:Create(Main, tweenInfoResize, {Size = MainSize}):Play()
-        task.wait(0.15) 
-        Sidebar.Visible = true
-        if activePage then activePage.Visible = true end
-        MinBtn.Text = "—" 
-    end 
-end)
-
-CloseBtn.MouseButton1Click:Connect(function() 
-    getgenv().NWKZ_Anchor = false; getgenv().NWKZ_AutoCast = false; getgenv().PP_Noclip = false; getgenv().PP_FishingThipActive = false; getgenv().PP_AutoSkillAll = false; getgenv().PP_Skill_Z = false; getgenv().PP_Skill_X = false; getgenv().PP_Skill_C = false; getgenv().PP_Skill_V = false; RealFishBtn.Visible = false; sg:Destroy() 
-end)
-
-task.spawn(function() while task.wait(0.1) do pcall(function() if getgenv().PP_AutoSkillAll then local randomKey = skillKeys[math.random(1, #skillKeys)]; VirtualInputManager:SendKeyEvent(true, randomKey, false, game); task.wait(0.02); VirtualInputManager:SendKeyEvent(false, randomKey, false, game) end; if getgenv().PP_Skill_Z then VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Z, false, game); task.wait(0.02); VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Z, false, game) end; if getgenv().PP_Skill_X then VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.X, false, game); t
+   
