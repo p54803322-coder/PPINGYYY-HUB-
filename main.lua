@@ -344,7 +344,7 @@ DevTeleportBtn.MouseButton1Click:Connect(function()
     end)
     DevTeleportBtn.Text = "🚀 LOADED TELEPORT SCRIPT!"
     task.wait(1)
-    DevTeleportBtn.Text = "🛠️ ใช้สำหรับคนพัฒนาสคริปteleport"
+    DevTeleportBtn.Text = "🛠️ scriptteleport"
 end)
 
 local function createTeleportButton(parent, name, x, y, z, yPos)
@@ -393,7 +393,7 @@ end
 
 createMerchantTP("พ่อค้าลับ - จุดที่ 1", -33, 8, 1606, 5)
 createMerchantTP("พ่อค้าลับ - จุดที่ 2", -1496, 9, 1134, 42)
-createMerchantTP("พ่อค้าลับ - จุดที่ 3 (อัปเดต)", -1495, 9, 1127, 79)
+createMerchantTP("พ่อค้าลับ - จุดที่ 3 (แก้ไขแล้ว)", -1526, 6, -1337)
 createMerchantTP("พ่อค้าลับ - จุดที่ 4", 1293, 8, 1428, 116)
 createMerchantTP("พ่อค้าลับ - จุดที่ 5", 1592, 47, -44, 153)
 
@@ -431,7 +431,7 @@ MinBtn.MouseButton1Click:Connect(function()
         Sidebar.Visible = false
         if activePage then activePage.Visible = false end
         TweenService:Create(Main, tweenInfoResize, {Size = MinimizedSize}):Play()
-        MinBtn.Text = "⬜" 
+        MinBtn.Text = "X" 
     else 
         TweenService:Create(Main, tweenInfoResize, {Size = MainSize}):Play()
         task.wait(0.15) 
