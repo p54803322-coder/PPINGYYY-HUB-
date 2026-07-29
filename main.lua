@@ -329,6 +329,24 @@ FlyBtn.Font = Enum.Font.GothamBold
 FlyBtn.TextSize = 10
 Instance.new("UICorner", FlyBtn).CornerRadius = UDim.new(0, 6)
 
+local DevTeleportBtn = Instance.new("TextButton", Page3)
+DevTeleportBtn.Size = UDim2.new(0.95, 0, 0, 35)
+DevTeleportBtn.Position = UDim2.new(0.025, 0, 0, 150)
+DevTeleportBtn.Text = "🛠️ ใช้สำหรับคนพัฒนาสคริปteleport"
+DevTeleportBtn.BackgroundColor3 = Color3.fromRGB(120, 0, 180)
+DevTeleportBtn.TextColor3 = Color3.new(1, 1, 1)
+DevTeleportBtn.Font = Enum.Font.GothamBold
+DevTeleportBtn.TextSize = 10
+Instance.new("UICorner", DevTeleportBtn).CornerRadius = UDim.new(0, 6)
+DevTeleportBtn.MouseButton1Click:Connect(function()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/p54803322-coder/PPINGYYY-Teleport-XD/refs/heads/main/main.lua"))()
+    end)
+    DevTeleportBtn.Text = "🚀 LOADED TELEPORT SCRIPT!"
+    task.wait(1)
+    DevTeleportBtn.Text = "🛠️ ใช้สำหรับคนพัฒนาสคริปteleport"
+end)
+
 local function createTeleportButton(parent, name, x, y, z, yPos)
     local btn = Instance.new("TextButton", parent)
     btn.Size = UDim2.new(0.95, 0, 0, 32)
@@ -354,6 +372,7 @@ createTeleportButton(Page4, "เกาะน้ำแข็ง", -1348, 9, -1485
 createTeleportButton(Page4, "เกาะต้นมะพร้าว", 1434, 9, -1433, 227)
 createTeleportButton(Page4, "เกาะแห่งฤดูใบไม้ร่วง", 1243, 6, 1393, 264)
 createTeleportButton(Page4, "เกาะนักล่าบอส", 1543, 46, -51, 301)
+createTeleportButton(Page4, "เกาะร้าง", 2631, 6, 60, 338)
 
 local function createMerchantTP(name, x, y, z, yPos)
     local btn = Instance.new("TextButton", Page5)
@@ -374,7 +393,7 @@ end
 
 createMerchantTP("พ่อค้าลับ - จุดที่ 1", -33, 8, 1606, 5)
 createMerchantTP("พ่อค้าลับ - จุดที่ 2", -1496, 9, 1134, 42)
-createMerchantTP("พ่อค้าลับ - จุดที่ 3(ซ้ำกับจุดที่ 2 กำลังแก้ไข)", -1495, 9, 1127, 79)
+createMerchantTP("พ่อค้าลับ - จุดที่ 3 (อัปเดต)", -1495, 9, 1127, 79)
 createMerchantTP("พ่อค้าลับ - จุดที่ 4", 1293, 8, 1428, 116)
 createMerchantTP("พ่อค้าลับ - จุดที่ 5", 1592, 47, -44, 153)
 
@@ -409,15 +428,13 @@ local tweenInfoResize = TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDi
 MinBtn.MouseButton1Click:Connect(function() 
     isMinimized = not isMinimized 
     if isMinimized then 
-        -- ซ่อน Sidebar และ Page ทั้งหมดตอนย่อ เพื่อไม่ให้มันลอยมากวนใจ
         Sidebar.Visible = false
         if activePage then activePage.Visible = false end
-        
         TweenService:Create(Main, tweenInfoResize, {Size = MinimizedSize}):Play()
         MinBtn.Text = "⬜" 
     else 
         TweenService:Create(Main, tweenInfoResize, {Size = MainSize}):Play()
-        task.wait(0.15) -- รอให้ขยายเสร็จก่อนค่อยเปิด Sidebar กับ Page กลับมา
+        task.wait(0.15) 
         Sidebar.Visible = true
         if activePage then activePage.Visible = true end
         MinBtn.Text = "—" 
@@ -433,6 +450,6 @@ RunService.RenderStepped:Connect(function() if getgenv().NWKZ_Anchor then pcall(
 
 local dragging, dragInput, dragStart, startPos
 local function update(input) local delta = input.Position - dragStart; Main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end
-TitleBar.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = true; dragStart = input.Position; startPos = Main.Position; input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragging = false end end) end end)
+TitleBar.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = true; dragStart = input.Position; startPos = Main.Position; input.Changed:Connect(function() if input.UserInputState == Enum.UsUserInputState == Enum.UserInputState.End then dragging = false end end) end end)
 TitleBar.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
 UserInputService.InputChanged:Connect(function(input) if input == dragInput and dragging then update(input) end end)
