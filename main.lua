@@ -190,6 +190,8 @@ local tpSound = createSound("124934430745275") -- เสียงเทเลพ
 local speedSound = createSound("9118823292") -- เสียงเพิ่ม/ลดสปีด
 local autoCastSound = createSound("119135010875996") -- เสียงเหวี่ยงเบ็ด
 local anchorSound = createSound("131661992591924") -- เสียงล็อคบาร์
+local deleteSound = createSound("154157386") -- เสียงตอนลบสคริปต์
+local sellSound = createSound("90531793028786") -- เสียงตอนกดขายปลาใหม่
 
 local MainSize = UDim2.new(0, 420, 0, 250) local MinimizedSize = UDim2.new(0, 420, 0, 40)
 
@@ -439,7 +441,21 @@ AnchorBtn.MouseButton1Click:Connect(function() pcall(function() anchorSound:Play
 FishThipBtn.MouseButton1Click:Connect(function() pcall(function() defaultClickSound:Play() end); getgenv().PP_FishingThipActive = not getgenv().PP_FishingThipActive; RealFishBtn.Visible = getgenv().PP_FishingThipActive; FishThipBtn.Text = "🟢 เปิดปิดปุ่มตกปลาทิพย์ (ขวาจอ): " .. (getgenv().PP_FishingThipActive and "ON" or "OFF"); FishThipBtn.BackgroundColor3 = getgenv().PP_FishingThipActive and Color3.fromRGB(0, 150, 80) or Color3.fromRGB(150, 0, 0) end)
 SkillAllBtn.MouseButton1Click:Connect(function() pcall(function() skillSound:Play() end); getgenv().PP_AutoSkillAll = not getgenv().PP_AutoSkillAll; SkillAllBtn.Text = "AUTO ALL SKILLS (รวมกดทุกสกิล): " .. (getgenv().PP_AutoSkillAll and "ON" or "OFF"); SkillAllBtn.BackgroundColor3 = getgenv().PP_AutoSkillAll and Color3.fromRGB(0, 150, 80) or Color3.fromRGB(150, 0, 0) end)
 NoclipBtn.MouseButton1Click:Connect(function() pcall(function() defaultClickSound:Play() end); getgenv().PP_Noclip = not getgenv().PP_Noclip; NoclipBtn.Text = "NOCLIP (ทะลุกำแพง): " .. (getgenv().PP_Noclip and "ON" or "OFF"); NoclipBtn.BackgroundColor3 = getgenv().PP_Noclip and Color3.fromRGB(0, 150, 80) or Color3.fromRGB(150, 0, 0) end)
-SellBtn.MouseButton1Click:Connect(function() pcall(function() defaultClickSound:Play() end); pcall(function() if RS:FindFirstChild("Events") and RS.Events:FindFirstChild("SellFish") then RS.Events.SellFish:FireServer("All") elseif RS:FindFirstChild("SellFish") then RS.SellFish:FireServer("All") end end); SellBtn.Text = "SOLD OUT!"; task.wait(0.4); SellBtn.Text = "💰 SELL ALL (ขายปลาทั้งหมด)" end)
+
+SellBtn.MouseButton1Click:Connect(function() 
+    pcall(function() sellSound:Play() end) 
+    pcall(function() 
+        if RS:FindFirstChild("Events") and RS.Events:FindFirstChild("SellFish") then 
+            RS.Events.SellFish:FireServer("All") 
+        elseif RS:FindFirstChild("SellFish") then 
+            RS.SellFish:FireServer("All") 
+        end 
+    end) 
+    SellBtn.Text = "SOLD OUT!" 
+    task.wait(0.4) 
+    SellBtn.Text = "💰 SELL ALL (ขายปลาทั้งหมด)" 
+end)
+
 SpeedUpBtn.MouseButton1Click:Connect(function() pcall(function() speedSound:Play() end); getgenv().PP_WalkSpeed = math.clamp(getgenv().PP_WalkSpeed + 10, 16, 250); SpeedLabel.Text = "WALKSPEED (วิ่งเร็ว): " .. tostring(getgenv().PP_WalkSpeed) end)
 SpeedDownBtn.MouseButton1Click:Connect(function() pcall(function() speedSound:Play() end); getgenv().PP_WalkSpeed = math.clamp(getgenv().PP_WalkSpeed - 10, 16, 250); SpeedLabel.Text = "WALKSPEED (วิ่งเร็ว): " .. tostring(getgenv().PP_WalkSpeed) end)
 FlyBtn.MouseButton1Click:Connect(function() pcall(function() defaultClickSound:Play() end); pcall(function() loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-FLY-GUI-V11-205450"))() end); FlyBtn.Text = "🚀 FLY LOADED!"; task.wait(0.8); FlyBtn.Text = "🚀 FLY GUI (เปิดโปรบิน)" end)
@@ -467,7 +483,27 @@ MinBtn.MouseButton1Click:Connect(function()
     end 
 end)
 
-CloseBtn.MouseButton1Click:Connect(function() pcall(function() defaultClickSound:Play() end); getgenv().NWKZ_Anchor = false; getgenv().NWKZ_AutoCast = false; getgenv().PP_Noclip = false; getgenv().PP_FishingThipActive = false; getgenv().PP_AutoSkillAll = false; getgenv().PP_Skill_Z = false; getgenv().PP_Skill_X = false; getgenv().PP_Skill_C = false; getgenv().PP_Skill_V = false; RealFishBtn.Visible = false; sg:Destroy() end)
+CloseBtn.MouseButton1Click:Connect(function()
+    pcall(function() defaultClickSound:Play() end)
+    
+    getgenv().NWKZ_Anchor = false
+    getgenv().NWKZ_AutoCast = false
+    getgenv().PP_Noclip = false
+    getgenv().PP_FishingThipActive = false
+    getgenv().PP_AutoSkillAll = false
+    getgenv().PP_Skill_Z = false
+    getgenv().PP_Skill_X = false
+    getgenv().PP_Skill_C = false
+    getgenv().PP_Skill_V = false
+    if RealFishBtn then RealFishBtn.Visible = false end
+
+    pcall(function()
+        deleteSound:Play()
+        deleteSound.Ended:Wait()
+    end)
+    
+    sg:Destroy()
+end)
 
 -- 🔴 ANIMATION START & FADE SOUND (ตอนสคริปต์โหลดและไหลลงมา)
 loadSound:Play()
@@ -479,7 +515,7 @@ task.spawn(function()
     loadSound:Stop()
 end)
 
-task.spawn(function() while task.wait(0.1) do pcall(function() if getgenv().PP_AutoSkillAll then local randomKey = skillKeys[math.random(1, #skillKeys)]; VirtualInputManager:SendKeyEvent(true, randomKey, false, game); task.wait(0.02); VirtualInputManager:SendKeyEvent(false, randomKey, false, game) end; if getgenv().PP_Skill_Z then VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Z, false, game); task.wait(0.02); VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Z, false, game) end; if getgenv().PP_Skill_X then VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.X, false, game); task.wait(0.02); VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.X, false, game) end; if getgenv().PP_Skill_C then VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.C, false, game); task.wait(0.02); VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.C, false, game); task.wait(0.02); VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.C, false, game) end; if getgenv().PP_Skill_V then VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.V, false, game); task.wait(0.02); VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.V, false, game) end end) end end)
+task.spawn(function() while task.wait(0.1) do pcall(function() if getgenv().PP_AutoSkillAll then local randomKey = skillKeys[math.random(1, #skillKeys)]; VirtualInputManager:SendKeyEvent(true, randomKey, false, game); task.wait(0.02); VirtualInputManager:SendKeyEvent(false, randomKey, false, game) end; if getgenv().PP_Skill_Z then VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Z, false, game); task.wait(0.02); VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Z, false, game) end; if getgenv().PP_Skill_X then VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.X, false, game); task.wait(0.02); VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.X, false, game) end; if getgenv().PP_Skill_C then VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.C, false, game); task.wait(0.02); VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.C, false, game) end; if getgenv().PP_Skill_V then VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.V, false, game); task.wait(0.02); VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.V, false, game) end end) end end)
 RunService.Stepped:Connect(function() if getgenv().PP_Noclip and lp.Character then pcall(function() for _, part in ipairs(lp.Character:GetDescendants()) do if part:IsA("BasePart") then part.CanCollide = false end end end) end end)
 task.spawn(function() while task.wait(1.5) do if getgenv().NWKZ_AutoCast then pcall(function() local MainGui = lp.PlayerGui:FindFirstChild("MainGui"); local char = lp.Character; if char and MainGui and MainGui:FindFirstChild("Fishing") then if not char:GetAttribute("Fishing") and not MainGui.Fishing.Visible then if RS:FindFirstChild("Events") and RS.Events:FindFirstChild("Fishing") then RS.Events.Fishing:FireServer() end end end end) end end end)
 RunService.RenderStepped:Connect(function() if getgenv().NWKZ_Anchor then pcall(function() local MainGui = lp.PlayerGui:FindFirstChild("MainGui"); if MainGui and MainGui:FindFirstChild("Fishing") and MainGui.Fishing.Visible then local bar = MainGui.Fishing.BarFrame.Bar; bar.Position = UDim2.new(0.5, 0, bar.Position.Y.Scale, 0); if RS:FindFirstChild("Fishing") then RS.Fishing:FireServer("1") end end end) end; pcall(function() if lp.Character and lp.Character:FindFirstChild("Humanoid") then lp.Character.Humanoid.WalkSpeed = getgenv().PP_WalkSpeed end end) end)
