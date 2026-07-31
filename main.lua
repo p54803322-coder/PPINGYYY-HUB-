@@ -156,7 +156,7 @@ end)
 showPage(Page1) -- เปิดมาหน้าแรกสุดไว้ก่อน
 
 -- มึงเอาปุ่มเก่าๆ ของมึง (CastBtn, SkillBtn ฯลฯ) มาวางต่อจากตรงนี้ลงไปได้เลยเพื่อนรัก!
--- [[ ★PPINGYYY HUB - FULL ANIMATION VERSION (TAB + MINIMIZE + CUSTOM SOUNDS) ★ ]] --
+-- [[ ★PPINGYYY HUB - FULL ANIMATION VERSION (FINAL FIXED) ★ ]] --
 local lp = game:GetService("Players").LocalPlayer
 local RS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -174,30 +174,31 @@ local skillKeys = {Enum.KeyCode.Z, Enum.KeyCode.X, Enum.KeyCode.C, Enum.KeyCode.
 local sg = Instance.new("ScreenGui", (pcall(function() return game:GetService("CoreGui") end) and game:GetService("CoreGui") or lp:WaitForChild("PlayerGui")))
 sg.Name = "PPINGYYY_Hub_Ultimate" sg.ResetOnSpawn = false
 
--- 🔊 SOUND SETUP (ระบบเสียงจุกๆ ตามคำขอ)
+-- 🔊 SOUND SETUP (ครอบ pcall ป้องกัน Sound/Animation Error แดงกวนใจ)
 local function createSound(id)
     local s = Instance.new("Sound", sg)
-    s.SoundId = "rbxassetid://" .. id
+    pcall(function()
+        s.SoundId = "rbxassetid://" .. id
+    end)
     s.Volume = 1
     return s
 end
 
-local clickSound = createSound("140207837688369") -- เสียงเปลี่ยน Tab
-local loadSound = createSound("103502836672744") -- เสียงตอนโหลดสคริปต์
-local defaultClickSound = createSound("139719503904449") -- เสียงปุ่มทั่วไปที่ไม่ได้ระบุ
-local skillSound = createSound("72321534878838") -- เสียงกดสกิล
-local tpSound = createSound("124934430745275") -- เสียงเทเลพอร์ต
-local speedSound = createSound("9118823292") -- เสียงเพิ่ม/ลดสปีด
-local autoCastSound = createSound("119135010875996") -- เสียงเหวี่ยงเบ็ด
-local anchorSound = createSound("131661992591924") -- เสียงล็อคบาร์
-local deleteSound = createSound("154157386") -- เสียงตอนลบสคริปต์
-local sellSound = createSound("90531793028786") -- เสียงตอนกดขายปลาใหม่
+local clickSound = createSound("140207837688369") 
+local loadSound = createSound("103502836672744") 
+local defaultClickSound = createSound("139719503904449") 
+local skillSound = createSound("72321534878838") 
+local tpSound = createSound("124934430745275") 
+local speedSound = createSound("9118823292") 
+local autoCastSound = createSound("119135010875996") 
+local anchorSound = createSound("131661992591924") 
+local deleteSound = createSound("154157386") 
+local sellSound = createSound("90531793028786")
 
 local MainSize = UDim2.new(0, 420, 0, 250) local MinimizedSize = UDim2.new(0, 420, 0, 40)
 
 local Main = Instance.new("Frame", sg) 
 Main.Size = MainSize 
--- เซ็ตให้อยู่ข้างบนจอก่อนเพื่อทำอนิเมชันไหลลงมา
 Main.Position = UDim2.new(0.3, 0, -0.5, 0) 
 Main.BackgroundColor3 = Color3.fromRGB(15, 15, 17)
 Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 10) Instance.new("UIStroke", Main).Color = Color3.fromRGB(0, 255, 150)
@@ -420,7 +421,7 @@ end
 
 createMerchantTP("พ่อค้าลับ - จุดที่ 1", -33, 8, 1606, 5)
 createMerchantTP("พ่อค้าลับ - จุดที่ 2", -1496, 9, 1134, 42)
-createMerchantTP("พ่อค้าลับ - จุดที่ 3 (อัปเดต)", -1495, 9, 1127, 79)
+createMerchantTP("พ่อค้าลับ - จุดที่ 3 (แก้ไขแล้ว)", -1528, 6, -1311, 79)
 createMerchantTP("พ่อค้าลับ - จุดที่ 4", 1293, 8, 1428, 116)
 createMerchantTP("พ่อค้าลับ - จุดที่ 5", 1592, 47, -44, 153)
 
@@ -505,23 +506,125 @@ CloseBtn.MouseButton1Click:Connect(function()
     sg:Destroy()
 end)
 
--- 🔴 ANIMATION START & FADE SOUND (ตอนสคริปต์โหลดและไหลลงมา)
-loadSound:Play()
+pcall(function() loadSound:Play() end)
 TweenService:Create(Main, TweenInfo.new(1.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(0.3, 0, 0.3, 0)}):Play()
 task.spawn(function()
-    task.wait(0.5) -- ปล่อยเสียงดังไปก่อนแป๊บนึง
-    TweenService:Create(loadSound, TweenInfo.new(1.5), {Volume = 0}):Play() -- ค่อยๆ เฟดเสียงลงใน 1.5 วินาที
+    task.wait(0.5) 
+    pcall(function() TweenService:Create(loadSound, TweenInfo.new(1.5), {Volume = 0}):Play() end)
     task.wait(1.5)
-    loadSound:Stop()
+    pcall(function() loadSound:Stop() end)
 end)
 
-task.spawn(function() while task.wait(0.1) do pcall(function() if getgenv().PP_AutoSkillAll then local randomKey = skillKeys[math.random(1, #skillKeys)]; VirtualInputManager:SendKeyEvent(true, randomKey, false, game); task.wait(0.02); VirtualInputManager:SendKeyEvent(false, randomKey, false, game) end; if getgenv().PP_Skill_Z then VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Z, false, game); task.wait(0.02); VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Z, false, game) end; if getgenv().PP_Skill_X then VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.X, false, game); task.wait(0.02); VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.X, false, game) end; if getgenv().PP_Skill_C then VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.C, false, game); task.wait(0.02); VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.C, false, game) end; if getgenv().PP_Skill_V then VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.V, false, game); task.wait(0.02); VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.V, false, game) end end) end end)
-RunService.Stepped:Connect(function() if getgenv().PP_Noclip and lp.Character then pcall(function() for _, part in ipairs(lp.Character:GetDescendants()) do if part:IsA("BasePart") then part.CanCollide = false end end end) end end)
-task.spawn(function() while task.wait(1.5) do if getgenv().NWKZ_AutoCast then pcall(function() local MainGui = lp.PlayerGui:FindFirstChild("MainGui"); local char = lp.Character; if char and MainGui and MainGui:FindFirstChild("Fishing") then if not char:GetAttribute("Fishing") and not MainGui.Fishing.Visible then if RS:FindFirstChild("Events") and RS.Events:FindFirstChild("Fishing") then RS.Events.Fishing:FireServer() end end end end) end end end)
-RunService.RenderStepped:Connect(function() if getgenv().NWKZ_Anchor then pcall(function() local MainGui = lp.PlayerGui:FindFirstChild("MainGui"); if MainGui and MainGui:FindFirstChild("Fishing") and MainGui.Fishing.Visible then local bar = MainGui.Fishing.BarFrame.Bar; bar.Position = UDim2.new(0.5, 0, bar.Position.Y.Scale, 0); if RS:FindFirstChild("Fishing") then RS.Fishing:FireServer("1") end end end) end; pcall(function() if lp.Character and lp.Character:FindFirstChild("Humanoid") then lp.Character.Humanoid.WalkSpeed = getgenv().PP_WalkSpeed end end) end)
+task.spawn(function() 
+    while task.wait(0.1) do 
+        pcall(function() 
+            if getgenv().PP_AutoSkillAll then 
+                local randomKey = skillKeys[math.random(1, #skillKeys)]
+                VirtualInputManager:SendKeyEvent(true, randomKey, false, game)
+                task.wait(0.02)
+                VirtualInputManager:SendKeyEvent(false, randomKey, false, game) 
+            end
+            if getgenv().PP_Skill_Z then 
+                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Z, false, game)
+                task.wait(0.02)
+                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Z, false, game) 
+            end
+            if getgenv().PP_Skill_X then 
+                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.X, false, game)
+                task.wait(0.02)
+                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.X, false, game) 
+            end
+            if getgenv().PP_Skill_C then 
+                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.C, false, game)
+                task.wait(0.02)
+                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.C, false, game) 
+            end
+            if getgenv().PP_Skill_V then 
+                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.V, false, game)
+                task.wait(0.02)
+                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.V, false, game) 
+            end 
+        end) 
+    end 
+end)
+
+RunService.Stepped:Connect(function() 
+    if getgenv().PP_Noclip and lp.Character then 
+        pcall(function() 
+            for _, part in ipairs(lp.Character:GetDescendants()) do 
+                if part:IsA("BasePart") then 
+                    part.CanCollide = false 
+                end 
+            end 
+        end) 
+    end 
+end)
+
+task.spawn(function() 
+    while task.wait(1.5) do 
+        if getgenv().NWKZ_AutoCast then 
+            pcall(function() 
+                local MainGui = lp.PlayerGui:FindFirstChild("MainGui")
+                local char = lp.Character
+                if char and MainGui and MainGui:FindFirstChild("Fishing") then 
+                    if not char:GetAttribute("Fishing") and not MainGui.Fishing.Visible then 
+                        if RS:FindFirstChild("Events") and RS.Events:FindFirstChild("Fishing") then 
+                            RS.Events.Fishing:FireServer() 
+                        end 
+                    end 
+                end 
+            end) 
+        end 
+    end 
+end)
+
+RunService.RenderStepped:Connect(function() 
+    if getgenv().NWKZ_Anchor then 
+        pcall(function() 
+            local MainGui = lp.PlayerGui:FindFirstChild("MainGui")
+            if MainGui and MainGui:FindFirstChild("Fishing") and MainGui.Fishing.Visible then 
+                local bar = MainGui.Fishing.BarFrame.Bar
+                bar.Position = UDim2.new(0.5, 0, bar.Position.Y.Scale, 0)
+                if RS:FindFirstChild("Fishing") then 
+                    RS.Fishing:FireServer("1") 
+                end 
+            end 
+        end) 
+    end
+    pcall(function() 
+        if lp.Character and lp.Character:FindFirstChild("Humanoid") then 
+            lp.Character.Humanoid.WalkSpeed = getgenv().PP_WalkSpeed 
+        end 
+    end) 
+end)
 
 local dragging, dragInput, dragStart, startPos
-local function update(input) local delta = input.Position - dragStart; Main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end
-TitleBar.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = true; dragStart = input.Position; startPos = Main.Position; input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragging = false end end) end end)
-TitleBar.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
-UserInputService.InputChanged:Connect(function(input) if input == dragInput and dragging then update(input) end end)
+local function update(input) 
+    local delta = input.Position - dragStart
+    Main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) 
+end
+
+TitleBar.InputBegan:Connect(function(input) 
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
+        dragging = true
+        dragStart = input.Position
+        startPos = Main.Position
+        input.Changed:Connect(function() 
+            if input.UserInputState == Enum.UserInputState.End then 
+                dragging = false 
+            end 
+        end) 
+    end 
+end)
+
+TitleBar.InputChanged:Connect(function(input) 
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then 
+        dragInput = input 
+    end 
+end)
+
+UserInputService.InputChanged:Connect(function(input) 
+    if input == dragInput and dragging then 
+        update(input) 
+    end 
+end)
