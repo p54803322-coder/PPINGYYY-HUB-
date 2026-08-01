@@ -1,62 +1,418 @@
--- [[ ★ FULL FIXED PPINGYYY HUB (FINAL VERSION) ★ ]] --
+-- [[ ★ PPINGYYY HUB - PREMIUM LOADING SCREEN v6 ★ ]] --
 local lp = game:GetService("Players").LocalPlayer
 local RS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
+local Camera = workspace.CurrentCamera
 
--- 1. ล้างของเก่า
-for _, v in ipairs(game:GetService("CoreGui"):GetChildren()) do if v.Name == "PPINGYYY_Hub_Ultimate" then v:Destroy() end end
+-- ⚙️ CONFIG
+local LOADING_TIME = 3.5
+local PRIMARY_COLOR = Color3.fromRGB(0, 255, 130)
+local PRIMARY_COLOR_LIGHT = Color3.fromRGB(120, 255, 190)
+local SECONDARY_COLOR = Color3.fromRGB(100, 200, 255)
+local ACCENT_COLOR = Color3.fromRGB(255, 100, 200)
+local BG_COLOR = Color3.fromRGB(12, 12, 22)
+local STAR_COUNT = 60
+local OVERSCAN = 0.08
+
+-- ★ ระยะตก: ใช้ pixel จริงจากความสูงจอ (viewport) คูณ 1.5 เท่า รับประกันหลุดจอทุกอุปกรณ์แน่นอน
+-- (ของเดิมคำนวณจาก Scale ของกรอบเล็กๆ อย่าง TitleGroup/ProgressGroup ที่สูงแค่ 100-200px เลยตกไม่พ้นจอ)
+local function GetDropDistance()
+    local h = Camera and Camera.ViewportSize.Y or 1000
+    return h * 1.6
+end
+
+-- ✨ ล้างของเก่า
+for _, v in ipairs(game:GetService("CoreGui"):GetChildren()) do 
+    if v.Name == "PPINGYYY_Hub_Ultimate" then v:Destroy() end 
+end
+
 local sg = Instance.new("ScreenGui", game:GetService("CoreGui"))
 sg.Name = "PPINGYYY_Hub_Ultimate"
+sg.ResetOnSpawn = false
+sg.IgnoreGuiInset = true
 
--- 2. Loading Screen System (ระบบโหลดแบบเท่ๆ)
-local LoadingFrame = Instance.new("Frame", sg)
-LoadingFrame.Size = UDim2.new(2, 0, 1.5, 0); LoadingFrame.Position = UDim2.new(-0.5, 0, -1.6, 0); LoadingFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0); LoadingFrame.BackgroundTransparency = 0.75; LoadingFrame.ZIndex = 999
+-- 📦 Main Loading Container — ขนาดเท่าจอจริงพอดี (เนื้อหา UI ทั้งหมดอิงตำแหน่งจากตรงนี้ จะได้ไม่ล้นขอบ)
+local LoadingContainer = Instance.new("Frame", sg)
+LoadingContainer.Size = UDim2.new(1, 0, 1, 0)
+LoadingContainer.Position = UDim2.new(0, 0, -1, 0) -- เริ่มเหนือจอ
+LoadingContainer.BackgroundTransparency = 1 -- พื้นหลังจริงย้ายไปอยู่ที่ BackgroundLayer แทน (จะได้ขยายเกินขอบได้อิสระ)
+LoadingContainer.BorderSizePixel = 0
+LoadingContainer.ZIndex = 999
+LoadingContainer.ClipsDescendants = false
 
+-- 🌌 BackgroundLayer: ชั้นพื้นหลัง (ขยายเกินขอบจอกันโหว่) แยกออกจากชั้นเนื้อหา UI
+local BackgroundLayer = Instance.new("Frame", LoadingContainer)
+BackgroundLayer.Size = UDim2.new(1 + OVERSCAN * 2, 0, 1 + OVERSCAN * 2, 0)
+BackgroundLayer.Position = UDim2.new(-OVERSCAN, 0, -OVERSCAN, 0)
+BackgroundLayer.BackgroundColor3 = BG_COLOR
+BackgroundLayer.BackgroundTransparency = 0.65
+BackgroundLayer.BorderSizePixel = 0
+BackgroundLayer.ZIndex = 999
+local UIGradient = Instance.new("UIGradient", BackgroundLayer)
+UIGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(12, 12, 25)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(18, 24, 45)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(12, 12, 25))
+}
+UIGradient.Rotation = 90
+
+-- ⭐ Animated Starfield (อยู่ใน BackgroundLayer ที่ขยายเกินขอบ)
 local stars = {}
-for i = 1, 80 do
-    local star = Instance.new("Frame", LoadingFrame)
-    local s = math.random(2, 4); star.Size = UDim2.new(0, s, 0, s); star.Position = UDim2.new(math.random(), 0, math.random(), 0); star.BackgroundColor3 = Color3.fromRGB(255, 255, 255); star.BorderSizePixel = 0; star.BackgroundTransparency = math.random(3, 8) / 10; Instance.new("UICorner", star).CornerRadius = UDim.new(1, 0)
-    table.insert(stars, star)
-    task.spawn(function()
-        while star.Parent do
-            local nextPos = UDim2.new(math.clamp(star.Position.X.Scale + (math.random(-5, 5)/100), 0, 1), 0, math.clamp(star.Position.Y.Scale + (math.random(-5, 5)/100), 0, 1), 0)
-            TweenService:Create(star, TweenInfo.new(math.random(3, 6)), {Position = nextPos}):Play(); task.wait(math.random(3, 6))
+local function CreateStarfield()
+    for i = 1, STAR_COUNT do
+        local star = Instance.new("Frame", BackgroundLayer)
+        local size = math.random(1, 3)
+        star.Size = UDim2.new(0, size, 0, size)
+        star.Position = UDim2.new(math.random(0, 100)/100, 0, math.random(0, 100)/100, 0)
+        star.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        star.BorderSizePixel = 0
+        star.ZIndex = 1000
+        star.BackgroundTransparency = math.random(4, 8) / 10
+        Instance.new("UICorner", star).CornerRadius = UDim.new(1, 0)
+        table.insert(stars, star)
+        task.spawn(function()
+            while star.Parent do
+                local moveTime = math.random(40, 80) / 10
+                local newX = math.clamp(star.Position.X.Scale + (math.random(-6, 6) / 100), 0, 1)
+                local newY = math.clamp(star.Position.Y.Scale + (math.random(-6, 6) / 100), 0, 1)
+                TweenService:Create(star, TweenInfo.new(moveTime, Enum.EasingStyle.Sine), {
+                    Position = UDim2.new(newX, 0, newY, 0),
+                    BackgroundTransparency = math.random(3, 9) / 10
+                }):Play()
+                task.wait(moveTime)
+            end
+        end)
+    end
+end
+CreateStarfield()
+
+-- ✨ Corner glow ประดับมุม (อยู่ใน BackgroundLayer เช่นกัน)
+local function CreateCornerGlow(anchorX, anchorY, posX, posY)
+    local glow = Instance.new("ImageLabel", BackgroundLayer)
+    glow.Size = UDim2.new(0, 500, 0, 500)
+    glow.AnchorPoint = Vector2.new(anchorX, anchorY)
+    glow.Position = UDim2.new(posX, 0, posY, 0)
+    glow.BackgroundTransparency = 1
+    glow.Image = "rbxasset://textures/particles/sparkles_main.dds"
+    glow.ImageColor3 = PRIMARY_COLOR
+    glow.ImageTransparency = 0.85
+    glow.ZIndex = 998
+    return glow
+end
+CreateCornerGlow(0, 1, 0.05, 0.95)
+CreateCornerGlow(1, 1, 0.95, 0.95)
+CreateCornerGlow(0, 0, 0.05, 0.05)
+CreateCornerGlow(1, 0, 0.95, 0.05)
+
+-- 🎯 Main Title Group — ★ ตอนนี้อยู่ใน LoadingContainer ตรงๆ (ไม่ใช่ BackgroundLayer ที่ขยายเกิน) เพื่อให้ตำแหน่งอิงจอจริง ไม่ล้นขอบ
+local TitleGroup = Instance.new("Frame", LoadingContainer)
+TitleGroup.Size = UDim2.new(1, 0, 0, 200)
+TitleGroup.Position = UDim2.new(0, 0, 0.3, 0)
+TitleGroup.BackgroundTransparency = 1
+TitleGroup.ZIndex = 1001
+
+local TopLine = Instance.new("Frame", TitleGroup)
+TopLine.Size = UDim2.new(0, 0, 0, 3)
+TopLine.Position = UDim2.new(0.5, 0, 0, -20)
+TopLine.BackgroundColor3 = PRIMARY_COLOR
+TopLine.BorderSizePixel = 0
+TopLine.AnchorPoint = Vector2.new(0.5, 0)
+
+local MainTitle = Instance.new("TextLabel", TitleGroup)
+MainTitle.Size = UDim2.new(0.9, 0, 0, 80)
+MainTitle.Position = UDim2.new(0.05, 0, 0.15, 0)
+MainTitle.Text = "★ PPINGYYY HUB ★"
+MainTitle.TextColor3 = PRIMARY_COLOR
+MainTitle.Font = Enum.Font.GothamBold
+MainTitle.TextSize = 48
+MainTitle.BackgroundTransparency = 1
+MainTitle.ZIndex = 1001
+MainTitle.TextTransparency = 1
+local TitleAspect = Instance.new("UITextSizeConstraint", MainTitle)
+TitleAspect.MinTextSize = 22
+TitleAspect.MaxTextSize = 48
+
+local TitleGlow = Instance.new("TextLabel", TitleGroup)
+TitleGlow.Size = MainTitle.Size
+TitleGlow.Position = MainTitle.Position
+TitleGlow.Text = "★ PPINGYYY HUB ★"
+TitleGlow.TextColor3 = PRIMARY_COLOR
+TitleGlow.Font = Enum.Font.GothamBold
+TitleGlow.TextSize = 48
+TitleGlow.BackgroundTransparency = 1
+TitleGlow.ZIndex = 1000
+TitleGlow.TextTransparency = 0.6
+local GlowAspect = Instance.new("UITextSizeConstraint", TitleGlow)
+GlowAspect.MinTextSize = 22
+GlowAspect.MaxTextSize = 48
+
+local Subtitle = Instance.new("TextLabel", TitleGroup)
+Subtitle.Size = UDim2.new(0.8, 0, 0, 40)
+Subtitle.Position = UDim2.new(0.1, 0, 0.65, 0)
+Subtitle.Text = "LOADING EXPERIENCE"
+Subtitle.TextColor3 = SECONDARY_COLOR
+Subtitle.Font = Enum.Font.Gotham
+Subtitle.TextSize = 18
+Subtitle.BackgroundTransparency = 1
+Subtitle.ZIndex = 1001
+Subtitle.TextTransparency = 1
+local SubAspect = Instance.new("UITextSizeConstraint", Subtitle)
+SubAspect.MinTextSize = 12
+SubAspect.MaxTextSize = 18
+
+local BottomLine = Instance.new("Frame", TitleGroup)
+BottomLine.Size = UDim2.new(0, 0, 0, 2)
+BottomLine.Position = UDim2.new(0.5, 0, 1, 20)
+BottomLine.BackgroundColor3 = ACCENT_COLOR
+BottomLine.BorderSizePixel = 0
+BottomLine.AnchorPoint = Vector2.new(0.5, 0)
+
+-- 📊 Progress Bar Section — อยู่ใน LoadingContainer ตรงๆ เช่นกัน (แก้ปัญหาเปอร์เซ็นต์ล้นขอบจอ)
+local ProgressGroup = Instance.new("Frame", LoadingContainer)
+ProgressGroup.Size = UDim2.new(1, 0, 0, 100)
+ProgressGroup.Position = UDim2.new(0, 0, 0.65, 0)
+ProgressGroup.BackgroundTransparency = 1
+ProgressGroup.ZIndex = 1001
+
+local BarBg = Instance.new("Frame", ProgressGroup)
+BarBg.Size = UDim2.new(0.7, 0, 0, 6) -- ลดความกว้างเล็กน้อยเพื่อเผื่อที่ให้ % ด้านขวาไม่ชนขอบ
+BarBg.Position = UDim2.new(0.08, 0, 0.3, 0)
+BarBg.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+BarBg.BackgroundTransparency = 0.3
+BarBg.BorderSizePixel = 0
+Instance.new("UICorner", BarBg).CornerRadius = UDim.new(1, 0)
+
+local BarFill = Instance.new("Frame", BarBg)
+BarFill.Size = UDim2.new(0, 0, 1, 0)
+BarFill.BackgroundColor3 = PRIMARY_COLOR
+BarFill.BorderSizePixel = 0
+BarFill.ClipsDescendants = true
+Instance.new("UICorner", BarFill).CornerRadius = UDim.new(1, 0)
+
+local FillGradient = Instance.new("UIGradient", BarFill)
+FillGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, PRIMARY_COLOR),
+    ColorSequenceKeypoint.new(0.5, PRIMARY_COLOR_LIGHT),
+    ColorSequenceKeypoint.new(1, PRIMARY_COLOR)
+}
+FillGradient.Rotation = 90
+
+local BarShine = Instance.new("Frame", BarFill)
+BarShine.Size = UDim2.new(0, 30, 1, 0)
+BarShine.Position = UDim2.new(0, 0, 0, 0)
+BarShine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+BarShine.BackgroundTransparency = 0.7
+BarShine.BorderSizePixel = 0
+BarShine.ZIndex = 1002
+
+-- ★ เปอร์เซ็นต์: ใช้ AnchorPoint + ตำแหน่งแบบ Scale ล้วนๆ ชิดขวาแบบเผื่อขอบ ไม่มีทางล้นจออีกต่อไป
+local PercentText = Instance.new("TextLabel", ProgressGroup)
+PercentText.Size = UDim2.new(0, 70, 0, 30)
+PercentText.AnchorPoint = Vector2.new(1, 0) -- ยึดขอบขวาของตัวเอง
+PercentText.Position = UDim2.new(0.97, 0, 0.2, 0) -- ชิดขวาแบบเว้นขอบ 3%
+PercentText.Text = "0%"
+PercentText.TextColor3 = PRIMARY_COLOR
+PercentText.Font = Enum.Font.GothamBold
+PercentText.TextSize = 16
+PercentText.TextXAlignment = Enum.TextXAlignment.Right
+PercentText.BackgroundTransparency = 1
+PercentText.TextTransparency = 1
+PercentText.ZIndex = 1001
+
+-- Status Pill (ข้อความ "Loading resources..." ฯลฯ)
+local StatusPill = Instance.new("Frame", ProgressGroup)
+StatusPill.Size = UDim2.new(0, 220, 0, 32)
+StatusPill.AnchorPoint = Vector2.new(0.5, 0)
+StatusPill.Position = UDim2.new(0.5, 0, 0.62, 0)
+StatusPill.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
+StatusPill.BackgroundTransparency = 0.35
+StatusPill.ZIndex = 1000
+StatusPill.Visible = false
+Instance.new("UICorner", StatusPill).CornerRadius = UDim.new(1, 0)
+local PillStroke = Instance.new("UIStroke", StatusPill)
+PillStroke.Color = PRIMARY_COLOR
+PillStroke.Transparency = 0.5
+PillStroke.Thickness = 1
+
+local StatusDot = Instance.new("Frame", StatusPill)
+StatusDot.Size = UDim2.new(0, 8, 0, 8)
+StatusDot.AnchorPoint = Vector2.new(0, 0.5)
+StatusDot.Position = UDim2.new(0, 14, 0.5, 0)
+StatusDot.BackgroundColor3 = PRIMARY_COLOR
+StatusDot.BorderSizePixel = 0
+Instance.new("UICorner", StatusDot).CornerRadius = UDim.new(1, 0)
+local statusDotBlinking = true
+task.spawn(function()
+    while statusDotBlinking and StatusDot.Parent do
+        TweenService:Create(StatusDot, TweenInfo.new(0.6, Enum.EasingStyle.Sine), {BackgroundTransparency = 0.7}):Play()
+        task.wait(0.6)
+        TweenService:Create(StatusDot, TweenInfo.new(0.6, Enum.EasingStyle.Sine), {BackgroundTransparency = 0}):Play()
+        task.wait(0.6)
+    end
+end)
+
+local StatusText = Instance.new("TextLabel", StatusPill)
+StatusText.Size = UDim2.new(1, -34, 1, 0)
+StatusText.Position = UDim2.new(0, 28, 0, 0)
+StatusText.Text = "Initializing systems..."
+StatusText.TextColor3 = SECONDARY_COLOR
+StatusText.Font = Enum.Font.GothamMedium
+StatusText.TextSize = 14
+StatusText.TextXAlignment = Enum.TextXAlignment.Left
+StatusText.BackgroundTransparency = 1
+StatusText.ZIndex = 1001
+StatusText.TextTransparency = 1
+
+-- 🎉 Welcome Text
+local WelcomeText = Instance.new("TextLabel", LoadingContainer)
+WelcomeText.Size = UDim2.new(0.9, 0, 0, 60)
+WelcomeText.Position = UDim2.new(0.05, 0, 0.45, 0)
+WelcomeText.Text = "WELCOME TO SCRIPT PPINGYYY HUB"
+WelcomeText.TextColor3 = PRIMARY_COLOR
+WelcomeText.Font = Enum.Font.GothamBold
+WelcomeText.TextSize = 34
+WelcomeText.BackgroundTransparency = 1
+WelcomeText.ZIndex = 1001
+WelcomeText.TextTransparency = 1
+WelcomeText.TextWrapped = true
+local WelcomeAspect = Instance.new("UITextSizeConstraint", WelcomeText)
+WelcomeAspect.MinTextSize = 18
+WelcomeAspect.MaxTextSize = 34
+
+-- 🎬 ANIMATIONS
+
+TweenService:Create(LoadingContainer, TweenInfo.new(1.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)}):Play()
+
+TweenService:Create(TopLine, TweenInfo.new(1, Enum.EasingStyle.Quad), {Size = UDim2.new(0, 220, 0, 3)}):Play()
+TweenService:Create(BottomLine, TweenInfo.new(1, Enum.EasingStyle.Quad), {Size = UDim2.new(0, 160, 0, 2)}):Play()
+
+task.delay(0.6, function()
+    TweenService:Create(MainTitle, TweenInfo.new(1.2, Enum.EasingStyle.Quad), {TextTransparency = 0}):Play()
+    TweenService:Create(TitleGlow, TweenInfo.new(1.2, Enum.EasingStyle.Quad), {TextTransparency = 0.6}):Play()
+    TweenService:Create(Subtitle, TweenInfo.new(1.5, Enum.EasingStyle.Quad), {TextTransparency = 0}):Play()
+    TweenService:Create(PercentText, TweenInfo.new(1.2), {TextTransparency = 0}):Play()
+    StatusPill.Visible = true
+    StatusPill.BackgroundTransparency = 1
+    TweenService:Create(StatusPill, TweenInfo.new(1.2), {BackgroundTransparency = 0.35}):Play()
+    TweenService:Create(StatusText, TweenInfo.new(1.2), {TextTransparency = 0}):Play()
+end)
+
+local titleFloating = true
+task.spawn(function()
+    local startPos = MainTitle.Position
+    local t = 0
+    while titleFloating and MainTitle.Parent do
+        t = t + RunService.RenderStepped:Wait()
+        local floatY = math.sin(t * 1.3) * 6
+        local swayX = math.sin(t * 0.8) * 10
+        local rot = math.sin(t * 0.8) * 2.5
+        local newPos = UDim2.new(startPos.X.Scale, startPos.X.Offset + swayX, startPos.Y.Scale, startPos.Y.Offset + floatY)
+        MainTitle.Position = newPos
+        MainTitle.Rotation = rot
+        TitleGlow.Position = newPos
+        TitleGlow.Rotation = rot
+    end
+end)
+
+TweenService:Create(BarFill, TweenInfo.new(LOADING_TIME, Enum.EasingStyle.Linear), {Size = UDim2.new(1, 0, 1, 0)}):Play()
+
+local shineActive = true
+task.spawn(function()
+    while shineActive and BarFill.Parent do
+        BarShine.Position = UDim2.new(0, 0, 0, 0)
+        TweenService:Create(BarShine, TweenInfo.new(1.5, Enum.EasingStyle.Sine), {Position = UDim2.new(1, 0, 0, 0)}):Play()
+        task.wait(1.5)
+    end
+end)
+
+task.spawn(function()
+    local statusMessages = {
+        "Initializing systems...",
+        "Loading resources...",
+        "Preparing interface...",
+        "Finalizing setup...",
+        "Ready to go!"
+    }
+    for i = 0, 100 do
+        PercentText.Text = i .. "%"
+        local messageIndex = math.floor((i / 100) * (#statusMessages - 1)) + 1
+        StatusText.Text = statusMessages[messageIndex]
+        task.wait(LOADING_TIME / 100)
+    end
+end)
+
+task.wait(LOADING_TIME + 0.3)
+
+titleFloating = false
+shineActive = false
+statusDotBlinking = false
+
+-- 🍂 ตกลงไปแบบหมุน "ตกลึก" — ★ แก้แล้ว: ใช้ pixel offset จริงจากความสูงจอ รับประกันหลุดจอ 100% ไม่เหลือค้าง
+local DROP_DISTANCE = GetDropDistance()
+
+local function DropAndFade(obj, delayTime, rotationAmount, extraFadeObjs)
+    task.delay(delayTime, function()
+        if not obj.Parent then return end
+        local goalPos = UDim2.new(
+            obj.Position.X.Scale, obj.Position.X.Offset,
+            obj.Position.Y.Scale, obj.Position.Y.Offset + DROP_DISTANCE
+        )
+        local tweenInfo = TweenInfo.new(0.9, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+        local goals = {Position = goalPos}
+        if obj:IsA("TextLabel") then
+            goals.TextTransparency = 1
+            goals.Rotation = (obj.Rotation or 0) + rotationAmount
+        else
+            goals.BackgroundTransparency = 1
+            goals.Rotation = (obj.Rotation or 0) + rotationAmount
+        end
+        TweenService:Create(obj, tweenInfo, goals):Play()
+        -- เผื่อมี object ลูกที่มี transparency ของตัวเอง (เช่น BarFill ในหลอดโหลด) ให้เฟดตามไปด้วย
+        if extraFadeObjs then
+            for _, extraObj in ipairs(extraFadeObjs) do
+                if extraObj:IsA("TextLabel") then
+                    TweenService:Create(extraObj, tweenInfo, {TextTransparency = 1}):Play()
+                else
+                    TweenService:Create(extraObj, tweenInfo, {BackgroundTransparency = 1}):Play()
+                end
+            end
         end
     end)
 end
 
-local TextLabel = Instance.new("TextLabel", LoadingFrame)
-TextLabel.Size = UDim2.new(0, 500, 0, 100); TextLabel.Position = UDim2.new(0.5, -250, 0.45, 0); TextLabel.Text = "★ PPINGYYYHUB ★"; TextLabel.TextColor3 = Color3.fromRGB(0, 255, 150); TextLabel.Font = Enum.Font.GothamBold; TextLabel.TextSize = 40; TextLabel.BackgroundTransparency = 1; TextLabel.TextTransparency = 1; TweenService:Create(TextLabel, TweenInfo.new(2), {TextTransparency = 0}):Play()
+DropAndFade(MainTitle, 0, 220)
+DropAndFade(TitleGlow, 0, 220)
+DropAndFade(TopLine, 0.05, -60)
+DropAndFade(BottomLine, 0.1, 60)
+DropAndFade(Subtitle, 0.15, -30)
+-- ★ หลอดโหลด: ตกพร้อมกัน + เฟด BarFill/BarShine ไปด้วย (เมื่อก่อนแค่ BarBg เฟดแต่ BarFill สีเขียวยังทึบอยู่)
+DropAndFade(BarBg, 0.25, 40, {BarFill, BarShine})
+DropAndFade(PercentText, 0.3, -40)
+DropAndFade(StatusPill, 0.35, 30)
 
-task.spawn(function()
-    local startPos = TextLabel.Position; local t = 0
-    while TextLabel.Parent do
-        t = t + RunService.RenderStepped:Wait()
-        TextLabel.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + math.sin(t*1.5)*8, startPos.Y.Scale, startPos.Y.Offset + math.cos(t*1.2)*12); TextLabel.Rotation = math.sin(t*1.2)*4
-    end
+task.delay(1.2, function()
+    TweenService:Create(WelcomeText, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
 end)
 
-local BarBg = Instance.new("Frame", LoadingFrame); BarBg.Size = UDim2.new(0, 300, 0, 10); BarBg.Position = UDim2.new(0.5, -150, 0.6, 0); BarBg.BackgroundColor3 = Color3.fromRGB(255, 255, 255); BarBg.BorderSizePixel = 0
-local BarFill = Instance.new("Frame", BarBg); BarFill.Size = UDim2.new(0, 0, 1, 0); BarFill.BackgroundColor3 = Color3.fromRGB(0, 255, 150); BarFill.BorderSizePixel = 0
-local PercentText = Instance.new("TextLabel", BarBg); PercentText.Size = UDim2.new(1, 0, 0, 30); PercentText.Position = UDim2.new(0, 0, 1, 5); PercentText.Text = "0%"; PercentText.TextColor3 = Color3.fromRGB(255, 255, 255); PercentText.Font = Enum.Font.GothamBold; PercentText.BackgroundTransparency = 1
+task.wait(1.2 + 1.8)
 
-TweenService:Create(LoadingFrame, TweenInfo.new(3.5, Enum.EasingStyle.Quart), {Position = UDim2.new(-0.5, 0, -0.25, 0)}):Play()
-TweenService:Create(BarFill, TweenInfo.new(3, Enum.EasingStyle.Linear), {Size = UDim2.new(1, 0, 1, 0)}):Play()
-task.spawn(function() for i = 0, 100 do PercentText.Text = i .. "%"; task.wait(0.03) end end)
+TweenService:Create(WelcomeText, TweenInfo.new(1, Enum.EasingStyle.Quad), {TextTransparency = 1}):Play()
+TweenService:Create(BackgroundLayer, TweenInfo.new(1.2, Enum.EasingStyle.Quad), {BackgroundTransparency = 1}):Play()
 
-task.wait(3.5)
-for i = #stars, 1, -1 do local j = math.random(i); stars[i], stars[j] = stars[j], stars[i] end
-for _, star in ipairs(stars) do TweenService:Create(star, TweenInfo.new(0.1), {BackgroundTransparency = 1}):Play(); task.wait(0.005) end
-TweenService:Create(LoadingFrame, TweenInfo.new(1.5, Enum.EasingStyle.Quart), {Position = UDim2.new(math.random(-1, 0), 0, 1.5, 0), BackgroundTransparency = 1}):Play()
-TweenService:Create(TextLabel, TweenInfo.new(1.5), {TextTransparency = 1}):Play()
-TweenService:Create(BarBg, TweenInfo.new(1.5), {BackgroundTransparency = 1}):Play()
-TweenService:Create(BarFill, TweenInfo.new(1.5), {BackgroundTransparency = 1}):Play()
-TweenService:Create(PercentText, TweenInfo.new(1.5), {TextTransparency = 1}):Play()
-task.wait(1.5); LoadingFrame:Destroy()
+for i, star in ipairs(stars) do
+    task.delay(i * 0.008, function()
+        if star.Parent then
+            TweenService:Create(star, TweenInfo.new(0.7), {BackgroundTransparency = 1}):Play()
+        end
+    end)
+end
 
--- 3. สคริปต์หลักมึง (ที่มึงบอกว่ามีฟังก์ชันนั่นนี่) เอามาต่อจากตรงนี้ได้เลย!
--- มั่นใจว่าตรงท้ายสคริปต์หลักมึงมี end ปิดครบทุกฟังก์ชันนะเพื่อน!
+task.wait(1.3)
+LoadingContainer:Destroy()
+
+-- 🎮 ===== เอาสคริปต์หลักของมึงมาต่อจากตรงนี้นะ! =====
+-- ตรวจสอบให้ดีว่ามี end ครบทุกฟังก์ชัน
 -- [[ ★PPINGYYY HUB - FULLY FIXED VERSION ★ ]] --
 local lp = game:GetService("Players").LocalPlayer
 local RS = game:GetService("ReplicatedStorage")
