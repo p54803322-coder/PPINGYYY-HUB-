@@ -512,7 +512,7 @@ end)
 showPage(Page1) -- เปิดมาหน้าแรกสุดไว้ก่อน
 
 -- มึงเอาปุ่มเก่าๆ ของมึง (CastBtn, SkillBtn ฯลฯ) มาวางต่อจากตรงนี้ลงไปได้เลยเพื่อนรัก!
--- [[ ★PPINGYYY HUB - FULL ANIMATION VERSION (FINAL FIXED) ★ ]] --
+-- [[ ★PPINGYYY HUB - FULL ANIMATION VERSION ★ ]] --
 local lp = game:GetService("Players").LocalPlayer
 local RS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -523,14 +523,22 @@ local TweenService = game:GetService("TweenService")
 for _, v in ipairs(game:GetService("CoreGui"):GetChildren()) do if v.Name == "PPINGYYY_Hub_Ultimate" then v:Destroy() end end
 for _, v in ipairs(lp:WaitForChild("PlayerGui"):GetChildren()) do if v.Name == "PPINGYYY_Hub_Ultimate" then v:Destroy() end end
 
-getgenv().NWKZ_Anchor = false getgenv().NWKZ_AutoCast = false getgenv().PP_Noclip = false getgenv().PP_WalkSpeed = 16 getgenv().PP_FishingThipActive = false
-getgenv().PP_AutoSkillAll = false getgenv().PP_Skill_Z = false getgenv().PP_Skill_X = false getgenv().PP_Skill_C = false getgenv().PP_Skill_V = false
+getgenv().NWKZ_Anchor = false 
+getgenv().NWKZ_AutoCast = false 
+getgenv().PP_Noclip = false 
+getgenv().PP_WalkSpeed = 16 
+getgenv().PP_FishingThipActive = false
+getgenv().PP_AutoSkillAll = false 
+getgenv().PP_Skill_Z = false 
+getgenv().PP_Skill_X = false 
+getgenv().PP_Skill_C = false 
+getgenv().PP_Skill_V = false
 local skillKeys = {Enum.KeyCode.Z, Enum.KeyCode.X, Enum.KeyCode.C, Enum.KeyCode.V}
 
 local sg = Instance.new("ScreenGui", (pcall(function() return game:GetService("CoreGui") end) and game:GetService("CoreGui") or lp:WaitForChild("PlayerGui")))
-sg.Name = "PPINGYYY_Hub_Ultimate" sg.ResetOnSpawn = false
+sg.Name = "PPINGYYY_Hub_Ultimate" 
+sg.ResetOnSpawn = false
 
--- 🔊 SOUND SETUP (ครอบ pcall ป้องกัน Sound/Animation Error แดงกวนใจ)
 local function createSound(id)
     local s = Instance.new("Sound", sg)
     pcall(function()
@@ -551,22 +559,53 @@ local anchorSound = createSound("131661992591924")
 local deleteSound = createSound("154157386") 
 local sellSound = createSound("90531793028786")
 
-local MainSize = UDim2.new(0, 420, 0, 250) local MinimizedSize = UDim2.new(0, 420, 0, 40)
+local MainSize = UDim2.new(0, 420, 0, 250) 
+local MinimizedSize = UDim2.new(0, 420, 0, 40)
 
 local Main = Instance.new("Frame", sg) 
 Main.Size = MainSize 
 Main.Position = UDim2.new(0.3, 0, -0.5, 0) 
 Main.BackgroundColor3 = Color3.fromRGB(15, 15, 17)
-Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 10) Instance.new("UIStroke", Main).Color = Color3.fromRGB(0, 255, 150)
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 10) 
+Instance.new("UIStroke", Main).Color = Color3.fromRGB(0, 255, 150)
 
-local TitleBar = Instance.new("Frame", Main) TitleBar.Size = UDim2.new(1, 0, 0, 40) TitleBar.BackgroundTransparency = 1
-local TitleText = Instance.new("TextLabel", TitleBar) TitleText.Size = UDim2.new(1, 0, 1, 0) TitleText.Text = "★ PPINGYYY HUB ★" TitleText.TextColor3 = Color3.fromRGB(0, 255, 150) TitleText.Font = Enum.Font.GothamBold TitleText.TextSize = 14 TitleText.BackgroundTransparency = 1
+local TitleBar = Instance.new("Frame", Main) 
+TitleBar.Size = UDim2.new(1, 0, 0, 40) 
+TitleBar.BackgroundTransparency = 1
 
-local CloseBtn = Instance.new("TextButton", TitleBar) CloseBtn.Size = UDim2.new(0, 25, 0, 25) CloseBtn.Position = UDim2.new(0.9, 0, 0.25, 0) CloseBtn.Text = "X" CloseBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 0) CloseBtn.TextColor3 = Color3.new(1, 1, 1) Instance.new("UICorner", CloseBtn).CornerRadius = UDim.new(0, 5)
-local MinBtn = Instance.new("TextButton", TitleBar) MinBtn.Size = UDim2.new(0, 25, 0, 25) MinBtn.Position = UDim2.new(0.8, 0, 0.25, 0) MinBtn.Text = "—" MinBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 200) MinBtn.TextColor3 = Color3.new(1, 1, 1) Instance.new("UICorner", MinBtn).CornerRadius = UDim.new(0, 5)
+local TitleText = Instance.new("TextLabel", TitleBar) 
+TitleText.Size = UDim2.new(1, 0, 1, 0) 
+TitleText.Text = "★ PPINGYYY HUB ★" 
+TitleText.TextColor3 = Color3.fromRGB(0, 255, 150) 
+TitleText.Font = Enum.Font.GothamBold 
+TitleText.TextSize = 14 
+TitleText.BackgroundTransparency = 1
 
-local Sidebar = Instance.new("Frame", Main) Sidebar.Size = UDim2.new(0, 120, 1, -40) Sidebar.Position = UDim2.new(0, 0, 0, 40) Sidebar.BackgroundTransparency = 1
-local Pages = Instance.new("Frame", Main) Pages.Size = UDim2.new(1, -130, 1, -50) Pages.Position = UDim2.new(0, 125, 0, 45) Pages.BackgroundTransparency = 1
+local CloseBtn = Instance.new("TextButton", TitleBar) 
+CloseBtn.Size = UDim2.new(0, 25, 0, 25) 
+CloseBtn.Position = UDim2.new(0.9, 0, 0.25, 0) 
+CloseBtn.Text = "X" 
+CloseBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 0) 
+CloseBtn.TextColor3 = Color3.new(1, 1, 1) 
+Instance.new("UICorner", CloseBtn).CornerRadius = UDim.new(0, 5)
+
+local MinBtn = Instance.new("TextButton", TitleBar) 
+MinBtn.Size = UDim2.new(0, 25, 0, 25) 
+MinBtn.Position = UDim2.new(0.8, 0, 0.25, 0) 
+MinBtn.Text = "—" 
+MinBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 200) 
+MinBtn.TextColor3 = Color3.new(1, 1, 1) 
+Instance.new("UICorner", MinBtn).CornerRadius = UDim.new(0, 5)
+
+local Sidebar = Instance.new("Frame", Main) 
+Sidebar.Size = UDim2.new(0, 120, 1, -40) 
+Sidebar.Position = UDim2.new(0, 0, 0, 40) 
+Sidebar.BackgroundTransparency = 1
+
+local Pages = Instance.new("Frame", Main) 
+Pages.Size = UDim2.new(1, -130, 1, -50) 
+Pages.Position = UDim2.new(0, 125, 0, 45) 
+Pages.BackgroundTransparency = 1
 
 local tabButtons = {}
 local function createTabButton(text, posIndex) 
@@ -583,7 +622,11 @@ local function createTabButton(text, posIndex)
     return btn 
 end
 
-local Tab1Btn, Tab2Btn, Tab3Btn, Tab4Btn, Tab5Btn = createTabButton("🎣 ตกปลา", 0), createTabButton("⚡ สกิล", 1), createTabButton("🛠️ เครื่องมือ", 2), createTabButton("🏝️ วาร์ป", 3), createTabButton("📍 พ่อค้าลับ", 4)
+local Tab1Btn = createTabButton("🎣 ตกปลา", 0)
+local Tab2Btn = createTabButton("⚡ สกิล", 1)
+local Tab3Btn = createTabButton("🛠️ เครื่องมือ", 2)
+local Tab4Btn = createTabButton("🏝️ วาร์ป", 3)
+local Tab5Btn = createTabButton("📍 พ่อค้าลับ", 4)
 
 local function createPage() 
     local page = Instance.new("ScrollingFrame", Pages) 
@@ -632,11 +675,23 @@ Tab3Btn.MouseButton1Click:Connect(function() selectTab(Tab3Btn, Page3) end)
 Tab4Btn.MouseButton1Click:Connect(function() selectTab(Tab4Btn, Page4) end)
 Tab5Btn.MouseButton1Click:Connect(function() selectTab(Tab5Btn, Page5) end)
 
-local function createNormalButton(parent, text, yPos) local btn = Instance.new("TextButton", parent) btn.Size = UDim2.new(0.95, 0, 0, 32) btn.Position = UDim2.new(0.025, 0, 0, yPos) btn.Text = text btn.BackgroundColor3 = Color3.fromRGB(150, 0, 0) btn.TextColor3 = Color3.new(1, 1, 1) btn.Font = Enum.Font.GothamBold btn.TextSize = 10 Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6) return btn end
+local function createNormalButton(parent, text, yPos) 
+    local btn = Instance.new("TextButton", parent) 
+    btn.Size = UDim2.new(0.95, 0, 0, 32) 
+    btn.Position = UDim2.new(0.025, 0, 0, yPos) 
+    btn.Text = text 
+    btn.BackgroundColor3 = Color3.fromRGB(150, 0, 0) 
+    btn.TextColor3 = Color3.new(1, 1, 1) 
+    btn.Font = Enum.Font.GothamBold 
+    btn.TextSize = 10 
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6) 
+    return btn 
+end
 
 local CastBtn = createNormalButton(Page1, "เหวี่ยงเบ็ดออโต้: OFF", 5)
 local AnchorBtn = createNormalButton(Page1, "ทำให้แถบอยู่ตรงกลาง: OFF", 42)
 local FishThipBtn = createNormalButton(Page1, "🟢 เปิดปิดปุ่มตกปลาทิพย์ (ขวาจอ): OFF", 79)
+
 local SellBtn = Instance.new("TextButton", Page1)
 SellBtn.Size = UDim2.new(0.95, 0, 0, 32)
 SellBtn.Position = UDim2.new(0.025, 0, 0, 116)
@@ -648,6 +703,7 @@ SellBtn.TextSize = 10
 Instance.new("UICorner", SellBtn).CornerRadius = UDim.new(0, 6)
 
 local SkillAllBtn = createNormalButton(Page2, "AUTO ALL SKILLS (รวมกดทุกสกิล): OFF", 5)
+
 local function createGridSkillBtn(keyName, posIndex, varName)
     local btn = Instance.new("TextButton", Page2)
     btn.Size = UDim2.new(0.46, 0, 0, 30)
@@ -668,6 +724,7 @@ local function createGridSkillBtn(keyName, posIndex, varName)
         btn.TextColor3 = getgenv()[varName] and Color3.new(1,1,1) or Color3.fromRGB(200, 200, 200)
     end)
 end
+
 createGridSkillBtn("V", 0, "PP_Skill_V")
 createGridSkillBtn("Z", 1, "PP_Skill_Z")
 createGridSkillBtn("X", 2, "PP_Skill_X")
@@ -682,6 +739,7 @@ SpeedLabel.TextColor3 = Color3.fromRGB(0, 255, 150)
 SpeedLabel.Font = Enum.Font.Gotham
 SpeedLabel.TextSize = 11
 SpeedLabel.BackgroundTransparency = 1
+
 local SpeedUpBtn = Instance.new("TextButton", Page3)
 SpeedUpBtn.Size = UDim2.new(0.46, 0, 0, 30)
 SpeedUpBtn.Position = UDim2.new(0.02, 0, 0, 70)
@@ -691,6 +749,7 @@ SpeedUpBtn.TextColor3 = Color3.new(1, 1, 1)
 SpeedUpBtn.Font = Enum.Font.GothamBold
 SpeedUpBtn.TextSize = 10
 Instance.new("UICorner", SpeedUpBtn).CornerRadius = UDim.new(0, 5)
+
 local SpeedDownBtn = Instance.new("TextButton", Page3)
 SpeedDownBtn.Size = UDim2.new(0.46, 0, 0, 30)
 SpeedDownBtn.Position = UDim2.new(0.51, 0, 0, 70)
@@ -700,6 +759,7 @@ SpeedDownBtn.TextColor3 = Color3.new(1, 1, 1)
 SpeedDownBtn.Font = Enum.Font.GothamBold
 SpeedDownBtn.TextSize = 10
 Instance.new("UICorner", SpeedDownBtn).CornerRadius = UDim.new(0, 5)
+
 local FlyBtn = Instance.new("TextButton", Page3)
 FlyBtn.Size = UDim2.new(0.95, 0, 0, 35)
 FlyBtn.Position = UDim2.new(0.025, 0, 0, 110)
@@ -746,6 +806,7 @@ local function createTeleportButton(parent, name, x, y, z, yPos)
         end
     end)
 end
+
 createTeleportButton(Page4, "เกาะเทพตกปลาผู้เริ่มต้น", -236, 6, 56, 5)
 createTeleportButton(Page4, "เกาะไม้ไผ่", -1226, 5, -23, 42)
 createTeleportButton(Page4, "เกาะหลุมขนาดใหญ่", 74, 6, 1216, 79)
@@ -775,11 +836,14 @@ local function createMerchantTP(name, x, y, z, yPos)
     end)
 end
 
+-- พ่อค้าลับ (เหลือ 7 จุด)
 createMerchantTP("พ่อค้าลับ - จุดที่ 1", -33, 8, 1606, 5)
 createMerchantTP("พ่อค้าลับ - จุดที่ 2", -1496, 9, 1134, 42)
 createMerchantTP("พ่อค้าลับ - จุดที่ 3 (แก้ไขแล้ว)", -1528, 6, -1311, 79)
 createMerchantTP("พ่อค้าลับ - จุดที่ 4", 1293, 8, 1428, 116)
 createMerchantTP("พ่อค้าลับ - จุดที่ 5", 1592, 47, -44, 153)
+createMerchantTP("พ่อค้าลับ - จุดที่ 6", -178, 6, -1268, 190)
+createMerchantTP("พ่อค้าลับ - จุดที่ 7", 2861, 6, 121, 227)
 
 local RealFishBtn = Instance.new("TextButton", sg)
 RealFishBtn.Size = UDim2.new(0, 95, 0, 95)
@@ -871,116 +935,108 @@ task.spawn(function()
     pcall(function() loadSound:Stop() end)
 end)
 
-task.spawn(function() 
-    while task.wait(0.1) do 
-        pcall(function() 
-            if getgenv().PP_AutoSkillAll then 
-                local randomKey = skillKeys[math.random(1, #skillKeys)]
-                VirtualInputManager:SendKeyEvent(true, randomKey, false, game)
-                task.wait(0.02)
-                VirtualInputManager:SendKeyEvent(false, randomKey, false, game) 
-            end
-            if getgenv().PP_Skill_Z then 
-                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Z, false, game)
-                task.wait(0.02)
-                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Z, false, game) 
-            end
-            if getgenv().PP_Skill_X then 
-                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.X, false, game)
-                task.wait(0.02)
-                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.X, false, game) 
-            end
-            if getgenv().PP_Skill_C then 
-                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.C, false, game)
-                task.wait(0.02)
-                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.C, false, game) 
-            end
-            if getgenv().PP_Skill_V then 
-                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.V, false, game)
-                task.wait(0.02)
-                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.V, false, game) 
-            end 
-        end) 
-    end 
-end)
-
-RunService.Stepped:Connect(function() 
-    if getgenv().PP_Noclip and lp.Character then 
-        pcall(function() 
-            for _, part in ipairs(lp.Character:GetDescendants()) do 
-                if part:IsA("BasePart") then 
-                    part.CanCollide = false 
-                end 
-            end 
-        end) 
-    end 
-end)
-
-task.spawn(function() 
-    while task.wait(1.5) do 
-        if getgenv().NWKZ_AutoCast then 
-            pcall(function() 
-                local MainGui = lp.PlayerGui:FindFirstChild("MainGui")
-                local char = lp.Character
-                if char and MainGui and MainGui:FindFirstChild("Fishing") then 
-                    if not char:GetAttribute("Fishing") and not MainGui.Fishing.Visible then 
-                        if RS:FindFirstChild("Events") and RS.Events:FindFirstChild("Fishing") then 
-                            RS.Events.Fishing:FireServer() 
-                        end 
-                    end 
-                end 
-            end) 
-        end 
-    end 
-end)
-
-RunService.RenderStepped:Connect(function() 
-    if getgenv().NWKZ_Anchor then 
-        pcall(function() 
-            local MainGui = lp.PlayerGui:FindFirstChild("MainGui")
-            if MainGui and MainGui:FindFirstChild("Fishing") and MainGui.Fishing.Visible then 
-                local bar = MainGui.Fishing.BarFrame.Bar
-                bar.Position = UDim2.new(0.5, 0, bar.Position.Y.Scale, 0)
-                if RS:FindFirstChild("Fishing") then 
-                    RS.Fishing:FireServer("1") 
-                end 
-            end 
-        end) 
-    end
-    pcall(function() 
-        if lp.Character and lp.Character:FindFirstChild("Humanoid") then 
-            lp.Character.Humanoid.WalkSpeed = getgenv().PP_WalkSpeed 
-        end 
-    end) 
-end)
-
 local dragging, dragInput, dragStart, startPos
-local function update(input) 
-    local delta = input.Position - dragStart
-    Main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) 
-end
-
-TitleBar.InputBegan:Connect(function(input) 
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
+TitleBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
         dragging = true
         dragStart = input.Position
         startPos = Main.Position
-        input.Changed:Connect(function() 
-            if input.UserInputState == Enum.UserInputState.End then 
-                dragging = false 
-            end 
-        end) 
-    end 
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
 end)
 
-TitleBar.InputChanged:Connect(function(input) 
-    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then 
-        dragInput = input 
-    end 
+TitleBar.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
 end)
 
-UserInputService.InputChanged:Connect(function(input) 
-    if input == dragInput and dragging then 
-        update(input) 
-    end 
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        Main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+RunService.Stepped:Connect(function()
+    pcall(function()
+        if lp.Character then
+            local hum = lp.Character:FindFirstChildOfClass("Humanoid")
+            local hrp = lp.Character:FindFirstChild("HumanoidRootPart")
+            
+            if hum and hrp then
+                if getgenv().PP_WalkSpeed then
+                    hum.WalkSpeed = getgenv().PP_WalkSpeed
+                end
+                
+                if getgenv().PP_Noclip then
+                    for _, v in ipairs(lp.Character:GetDescendants()) do
+                        if v:IsA("BasePart") then
+                            v.CanCollide = false
+                        end
+                    end
+                end
+            end
+        end
+    end)
+end)
+
+task.spawn(function()
+    while task.wait(0.1) do
+        pcall(function()
+            if getgenv().NWKZ_AutoCast then
+                if RS:FindFirstChild("Events") and RS.Events:FindFirstChild("Cast") then
+                    RS.Events.Cast:FireServer()
+                elseif RS:FindFirstChild("Cast") then
+                    RS.Cast:FireServer()
+                end
+            end
+            
+            if getgenv().NWKZ_Anchor then
+                if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+                    local hrp = lp.Character.HumanoidRootPart
+                    hrp.AssemblyLinearVelocity = Vector3.new(0, hrp.AssemblyLinearVelocity.Y, 0)
+                end
+            end
+        end)
+    end
+end)
+
+task.spawn(function()
+    while task.wait(0.2) do
+        pcall(function()
+            if getgenv().PP_AutoSkillAll then
+                for _, key in ipairs(skillKeys) do
+                    VirtualInputManager:SendKeyEvent(true, key, false, game)
+                    task.wait(0.05)
+                    VirtualInputManager:SendKeyEvent(false, key, false, game)
+                end
+            else
+                if getgenv().PP_Skill_Z then
+                    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Z, false, game)
+                    task.wait(0.05)
+                    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Z, false, game)
+                end
+                if getgenv().PP_Skill_X then
+                    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.X, false, game)
+                    task.wait(0.05)
+                    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.X, false, game)
+                end
+                if getgenv().PP_Skill_C then
+                    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.C, false, game)
+                    task.wait(0.05)
+                    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.C, false, game)
+                end
+                if getgenv().PP_Skill_V then
+                    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.V, false, game)
+                    task.wait(0.05)
+                    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.V, false, game)
+                end
+            end
+        end)
+    end
 end)
