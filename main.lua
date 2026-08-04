@@ -512,16 +512,26 @@ end)
 showPage(Page1) -- เปิดมาหน้าแรกสุดไว้ก่อน
 
 -- มึงเอาปุ่มเก่าๆ ของมึง (CastBtn, SkillBtn ฯลฯ) มาวางต่อจากตรงนี้ลงไปได้เลยเพื่อนรัก!
--- [[ ★PPINGYYY HUB - FULL ANIMATION VERSION ★ ]] --
-local lp = game:GetService("Players").LocalPlayer
+-- [[ ★PPINGYYY HUB - ULTIMATE (NEW ROCK BAR ENGINE) ★ ]] --
+local Players = game:GetService("Players")
+local lp = Players.LocalPlayer
 local RS = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager") 
 local TweenService = game:GetService("TweenService")
 
-for _, v in ipairs(game:GetService("CoreGui"):GetChildren()) do if v.Name == "PPINGYYY_Hub_Ultimate" then v:Destroy() end end
-for _, v in ipairs(lp:WaitForChild("PlayerGui"):GetChildren()) do if v.Name == "PPINGYYY_Hub_Ultimate" then v:Destroy() end end
+print("★ [PPINGYYY] Initializing Full Hub with New Rock Bar Engine...")
+
+-- ลบ UI เก่าทิ้งกันซ้ำซ้อน
+pcall(function()
+    for _, v in ipairs(game:GetService("CoreGui"):GetChildren()) do 
+        if v.Name == "PPINGYYY_Hub_Ultimate" then v:Destroy() end 
+    end
+    for _, v in ipairs(lp.PlayerGui:GetChildren()) do 
+        if v.Name == "PPINGYYY_Hub_Ultimate" then v:Destroy() end 
+    end
+end)
 
 getgenv().NWKZ_Anchor = false 
 getgenv().NWKZ_AutoCast = false 
@@ -535,9 +545,15 @@ getgenv().PP_Skill_C = false
 getgenv().PP_Skill_V = false
 local skillKeys = {Enum.KeyCode.Z, Enum.KeyCode.X, Enum.KeyCode.C, Enum.KeyCode.V}
 
-local sg = Instance.new("ScreenGui", (pcall(function() return game:GetService("CoreGui") end) and game:GetService("CoreGui") or lp:WaitForChild("PlayerGui")))
+local sg = Instance.new("ScreenGui")
 sg.Name = "PPINGYYY_Hub_Ultimate" 
 sg.ResetOnSpawn = false
+pcall(function()
+    sg.Parent = game:GetService("CoreGui")
+end)
+if not sg.Parent then
+    sg.Parent = lp:WaitForChild("PlayerGui")
+end
 
 local function createSound(id)
     local s = Instance.new("Sound", sg)
@@ -564,7 +580,7 @@ local MinimizedSize = UDim2.new(0, 420, 0, 40)
 
 local Main = Instance.new("Frame", sg) 
 Main.Size = MainSize 
-Main.Position = UDim2.new(0.3, 0, -0.5, 0) 
+Main.Position = UDim2.new(0.3, 0, 0.3, 0) 
 Main.BackgroundColor3 = Color3.fromRGB(15, 15, 17)
 Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 10) 
 Instance.new("UIStroke", Main).Color = Color3.fromRGB(0, 255, 150)
@@ -575,7 +591,7 @@ TitleBar.BackgroundTransparency = 1
 
 local TitleText = Instance.new("TextLabel", TitleBar) 
 TitleText.Size = UDim2.new(1, 0, 1, 0) 
-TitleText.Text = "★ PPINGYYY HUB ★" 
+TitleText.Text = "★ PPINGYYY HUB ULTIMATE ★" 
 TitleText.TextColor3 = Color3.fromRGB(0, 255, 150) 
 TitleText.Font = Enum.Font.GothamBold 
 TitleText.TextSize = 14 
@@ -644,7 +660,6 @@ local tweenInfoTab = TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirec
 
 local function selectTab(selectedBtn, targetPage)
     pcall(function() clickSound:Play() end)
-    
     for _, btn in ipairs(tabButtons) do
         if btn == selectedBtn then
             TweenService:Create(btn, tweenInfoTab, {
@@ -660,11 +675,9 @@ local function selectTab(selectedBtn, targetPage)
             }):Play()
         end
     end
-
     if activePage and activePage ~= targetPage then 
         activePage.Visible = false 
     end 
-    
     targetPage.Visible = true 
     activePage = targetPage
 end
@@ -689,7 +702,7 @@ local function createNormalButton(parent, text, yPos)
 end
 
 local CastBtn = createNormalButton(Page1, "เหวี่ยงเบ็ดออโต้: OFF", 5)
-local AnchorBtn = createNormalButton(Page1, "ทำให้แถบอยู่ตรงกลาง: OFF", 42)
+local AnchorBtn = createNormalButton(Page1, "ล็อกแถบตกปลา (Rock Bar): OFF", 42)
 local FishThipBtn = createNormalButton(Page1, "🟢 เปิดปิดปุ่มตกปลาทิพย์ (ขวาจอ): OFF", 79)
 
 local SellBtn = Instance.new("TextButton", Page1)
@@ -836,7 +849,6 @@ local function createMerchantTP(name, x, y, z, yPos)
     end)
 end
 
--- พ่อค้าลับ (เหลือ 7 จุด)
 createMerchantTP("พ่อค้าลับ - จุดที่ 1", -33, 8, 1606, 5)
 createMerchantTP("พ่อค้าลับ - จุดที่ 2", -1496, 9, 1134, 42)
 createMerchantTP("พ่อค้าลับ - จุดที่ 3 (แก้ไขแล้ว)", -1528, 6, -1311, 79)
@@ -858,7 +870,7 @@ RealFishBtn.BorderSizePixel = 0
 Instance.new("UICorner", RealFishBtn).CornerRadius = UDim.new(1, 0)
 
 CastBtn.MouseButton1Click:Connect(function() pcall(function() autoCastSound:Play() end); getgenv().NWKZ_AutoCast = not getgenv().NWKZ_AutoCast; CastBtn.Text = "AUTO CAST (เหวี่ยงเบ็ดออโต้): " .. (getgenv().NWKZ_AutoCast and "ON" or "OFF"); CastBtn.BackgroundColor3 = getgenv().NWKZ_AutoCast and Color3.fromRGB(0, 150, 80) or Color3.fromRGB(150, 0, 0) end)
-AnchorBtn.MouseButton1Click:Connect(function() pcall(function() anchorSound:Play() end); getgenv().NWKZ_Anchor = not getgenv().NWKZ_Anchor; AnchorBtn.Text = "ANCHOR (ทำให้แถบอยู่ตรงกลาง): " .. (getgenv().NWKZ_Anchor and "ON" or "OFF"); AnchorBtn.BackgroundColor3 = getgenv().NWKZ_Anchor and Color3.fromRGB(0, 150, 80) or Color3.fromRGB(150, 0, 0) end)
+AnchorBtn.MouseButton1Click:Connect(function() pcall(function() anchorSound:Play() end); getgenv().NWKZ_Anchor = not getgenv().NWKZ_Anchor; AnchorBtn.Text = "ล็อกแถบตกปลา (Rock Bar): " .. (getgenv().NWKZ_Anchor and "ON" or "OFF"); AnchorBtn.BackgroundColor3 = getgenv().NWKZ_Anchor and Color3.fromRGB(0, 150, 80) or Color3.fromRGB(150, 0, 0) end)
 FishThipBtn.MouseButton1Click:Connect(function() pcall(function() defaultClickSound:Play() end); getgenv().PP_FishingThipActive = not getgenv().PP_FishingThipActive; RealFishBtn.Visible = getgenv().PP_FishingThipActive; FishThipBtn.Text = "🟢 เปิดปิดปุ่มตกปลาทิพย์ (ขวาจอ): " .. (getgenv().PP_FishingThipActive and "ON" or "OFF"); FishThipBtn.BackgroundColor3 = getgenv().PP_FishingThipActive and Color3.fromRGB(0, 150, 80) or Color3.fromRGB(150, 0, 0) end)
 SkillAllBtn.MouseButton1Click:Connect(function() pcall(function() skillSound:Play() end); getgenv().PP_AutoSkillAll = not getgenv().PP_AutoSkillAll; SkillAllBtn.Text = "AUTO ALL SKILLS (รวมกดทุกสกิล): " .. (getgenv().PP_AutoSkillAll and "ON" or "OFF"); SkillAllBtn.BackgroundColor3 = getgenv().PP_AutoSkillAll and Color3.fromRGB(0, 150, 80) or Color3.fromRGB(150, 0, 0) end)
 NoclipBtn.MouseButton1Click:Connect(function() pcall(function() defaultClickSound:Play() end); getgenv().PP_Noclip = not getgenv().PP_Noclip; NoclipBtn.Text = "NOCLIP (ทะลุกำแพง): " .. (getgenv().PP_Noclip and "ON" or "OFF"); NoclipBtn.BackgroundColor3 = getgenv().PP_Noclip and Color3.fromRGB(0, 150, 80) or Color3.fromRGB(150, 0, 0) end)
@@ -906,7 +918,6 @@ end)
 
 CloseBtn.MouseButton1Click:Connect(function()
     pcall(function() defaultClickSound:Play() end)
-    
     getgenv().NWKZ_Anchor = false
     getgenv().NWKZ_AutoCast = false
     getgenv().PP_Noclip = false
@@ -917,17 +928,14 @@ CloseBtn.MouseButton1Click:Connect(function()
     getgenv().PP_Skill_C = false
     getgenv().PP_Skill_V = false
     if RealFishBtn then RealFishBtn.Visible = false end
-
     pcall(function()
         deleteSound:Play()
         deleteSound.Ended:Wait()
     end)
-    
     sg:Destroy()
 end)
 
 pcall(function() loadSound:Play() end)
-TweenService:Create(Main, TweenInfo.new(1.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(0.3, 0, 0.3, 0)}):Play()
 task.spawn(function()
     task.wait(0.5) 
     pcall(function() TweenService:Create(loadSound, TweenInfo.new(1.5), {Volume = 0}):Play() end)
@@ -950,63 +958,7 @@ TitleBar.InputBegan:Connect(function(input)
 end)
 
 TitleBar.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-        dragInput = input
-    end
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-    if input == dragInput and dragging then
-        local delta = input.Position - dragStart
-        Main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-end)
-
-RunService.Stepped:Connect(function()
-    pcall(function()
-        if lp.Character then
-            local hum = lp.Character:FindFirstChildOfClass("Humanoid")
-            local hrp = lp.Character:FindFirstChild("HumanoidRootPart")
-            
-            if hum and hrp then
-                if getgenv().PP_WalkSpeed then
-                    hum.WalkSpeed = getgenv().PP_WalkSpeed
-                end
-                
-                if getgenv().PP_Noclip then
-                    for _, v in ipairs(lp.Character:GetDescendants()) do
-                        if v:IsA("BasePart") then
-                            v.CanCollide = false
-                        end
-                    end
-                end
-            end
-        end
-    end)
-end)
-
-task.spawn(function()
-    while task.wait(0.1) do
-        pcall(function()
-            if getgenv().NWKZ_AutoCast then
-                if RS:FindFirstChild("Events") and RS.Events:FindFirstChild("Cast") then
-                    RS.Events.Cast:FireServer()
-                elseif RS:FindFirstChild("Cast") then
-                    RS.Cast:FireServer()
-                end
-            end
-            
-            if getgenv().NWKZ_Anchor then
-                if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
-                    local hrp = lp.Character.HumanoidRootPart
-                    hrp.AssemblyLinearVelocity = Vector3.new(0, hrp.AssemblyLinearVelocity.Y, 0)
-                end
-            end
-        end)
-    end
-end)
-
-task.spawn(function()
+    if inputask.spawn(function()
     while task.wait(0.2) do
         pcall(function()
             if getgenv().PP_AutoSkillAll then
@@ -1040,3 +992,6 @@ task.spawn(function()
         end)
     end
 end)
+
+print("★ [PPINGYYY] Full Script Loaded Successfully with Clean Rock Bar!")
+            
