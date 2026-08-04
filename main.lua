@@ -512,7 +512,7 @@ end)
 showPage(Page1) -- เปิดมาหน้าแรกสุดไว้ก่อน
 
 -- มึงเอาปุ่มเก่าๆ ของมึง (CastBtn, SkillBtn ฯลฯ) มาวางต่อจากตรงนี้ลงไปได้เลยเพื่อนรัก!
--- [[ ★PPINGYYY HUB - ULTIMATE (NEW ROCK BAR ENGINE) ★ ]] --
+-- [[ ★PPINGYYY HUB - ULTIMATE (NEW ROCK BAR ENGINE FIXED) ★ ]] --
 local Players = game:GetService("Players")
 local lp = Players.LocalPlayer
 local RS = game:GetService("ReplicatedStorage")
@@ -521,7 +521,7 @@ local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager") 
 local TweenService = game:GetService("TweenService")
 
-print("★ [PPINGYYY] Initializing Full Hub with New Rock Bar Engine...")
+print("★ [PPINGYYY] Initializing Full Hub with Fixed Rock Bar Engine...")
 
 -- ลบ UI เก่าทิ้งกันซ้ำซ้อน
 pcall(function()
@@ -543,7 +543,6 @@ getgenv().PP_Skill_Z = false
 getgenv().PP_Skill_X = false 
 getgenv().PP_Skill_C = false 
 getgenv().PP_Skill_V = false
-local skillKeys = {Enum.KeyCode.Z, Enum.KeyCode.X, Enum.KeyCode.C, Enum.KeyCode.V}
 
 local sg = Instance.new("ScreenGui")
 sg.Name = "PPINGYYY_Hub_Ultimate" 
@@ -958,40 +957,75 @@ TitleBar.InputBegan:Connect(function(input)
 end)
 
 TitleBar.InputChanged:Connect(function(input)
-    if inputask.spawn(function()
-    while task.wait(0.2) do
-        pcall(function()
-            if getgenv().PP_AutoSkillAll then
-                for _, key in ipairs(skillKeys) do
-                    VirtualInputManager:SendKeyEvent(true, key, false, game)
-                    task.wait(0.05)
-                    VirtualInputManager:SendKeyEvent(false, key, false, game)
-                end
-            else
-                if getgenv().PP_Skill_Z then
-                    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Z, false, game)
-                    task.wait(0.05)
-                    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Z, false, game)
-                end
-                if getgenv().PP_Skill_X then
-                    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.X, false, game)
-                    task.wait(0.05)
-                    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.X, false, game)
-                end
-                if getgenv().PP_Skill_C then
-                    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.C, false, game)
-                    task.wait(0.05)
-                    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.C, false, game)
-                end
-                if getgenv().PP_Skill_V then
-                    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.V, false, game)
-                    task.wait(0.05)
-                    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.V, false, game)
-                end
-            end
-        end)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end
+)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        Main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
     end
 end)
 
-print("★ [PPINGYYY] Full Script Loaded Successfully with Clean Rock Bar!")
-            
+-- Rock Bar Engine & Loop Functions
+RunService.Heartbeat:Connect(function()
+    pcall(function()
+        if getgenv().PP_Noclip and lp.Character then
+            for _, part in ipairs(lp.Character:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = false
+                end
+            end
+        end
+
+        if lp.Character and lp.Character:FindFirstChild("Humanoid") then
+            lp.Character.Humanoid.WalkSpeed = getgenv().PP_WalkSpeed
+        end
+
+        -- Auto Cast
+        if getgenv().NWKZ_AutoCast then
+            if RS:FindFirstChild("Events") and RS.Events:FindFirstChild("Cast") then
+                RS.Events.Cast:FireServer()
+            elseif RS:FindFirstChild("Cast") then
+                RS.Cast:FireServer()
+            end
+        end
+
+        -- Rock Bar Anchor / Minigame Fix
+        if getgenv().NWKZ_Anchor then
+            if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+                lp.Character.HumanoidRootPart.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+            end
+            if RS:FindFirstChild("Events") and RS.Events:FindFirstChild("FishingMinigame") then
+                RS.Events.FishingMinigame:FireServer(100)
+            end
+        end
+
+        -- Auto Skills
+        if getgenv().PP_AutoSkillAll or getgenv().PP_Skill_Z then
+            VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Z, false, game)
+            task.wait(0.05)
+            VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Z, false, game)
+        end
+        if getgenv().PP_AutoSkillAll or getgenv().PP_Skill_X then
+            VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.X, false, game)
+            task.wait(0.05)
+            VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.X, false, game)
+        end
+        if getgenv().PP_AutoSkillAll or getgenv().PP_Skill_C then
+            VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.C, false, game)
+            task.wait(0.05)
+            VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.C, false, game)
+        end
+        if getgenv().PP_AutoSkillAll or getgenv().PP_Skill_V then
+            VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.V, false, game)
+            task.wait(0.05)
+            VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.V, false, game)
+        end
+    end)
+end)
+
+print("★ [PPINGYYY] Full Hub Loaded Successfully with Fixed Rock Bar Engine! ★")
