@@ -429,7 +429,7 @@ getgenv().PP_AutoSkillAll = false getgenv().PP_Skill_Z = false getgenv().PP_Skil
 local skillKeys = {Enum.KeyCode.Z, Enum.KeyCode.X, Enum.KeyCode.C, Enum.KeyCode.V}
 
 local sg = Instance.new("ScreenGui", (pcall(function() return game:GetService("CoreGui") end) and game:GetService("CoreGui") or lp:WaitForChild("PlayerGui")))
-sg.Name = "PPINGYYY_Hub_Ultimqte" sg.ResetOnSpawn = false
+sg.Name = "PPINGYYY_Hub_Ultimate" sg.ResetOnSpawn = false
 
 local MainSize = UDim2.new(0, 420, 0, 250) local MinimizedSize = UDim2.new(0, 420, 0, 40)
 local tweenInfoMain = TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
@@ -512,7 +512,23 @@ end)
 showPage(Page1) -- เปิดมาหน้าแรกสุดไว้ก่อน
 
 -- มึงเอาปุ่มเก่าๆ ของมึง (CastBtn, SkillBtn ฯลฯ) มาวางต่อจากตรงนี้ลงไปได้เลยเพื่อนรัก!
--- [[ ★PPINGYYY HUB - ULTIMATE (ANIMATION & ROCK BAR FULL FIXED) ★ ]] --
+-- [[ ★ PPINGYYY HUB - ULTIMATE (FULL VERSION & FIXED ROCK BAR ALWAYS CENTER) ★ ]] --
+
+-- 🛑 ระบบเช็ก UI ซ้ำ: ถ้ามีตัวเก่าเปิดอยู่แล้ว จะดีดตัวใหม่ทิ้งทันที
+pcall(function()
+    local coreGui = game:GetService("CoreGui")
+    local players = game:GetService("Players")
+    local lp = players.LocalPlayer
+    local playerGui = lp and lp:FindFirstChild("PlayerGui")
+    
+    local existingGui = coreGui:FindFirstChild("PPINGYYY_Hub_Ultimate") or (playerGui and playerGui:FindFirstChild("PPINGYYY_Hub_Ultimate"))
+    
+    if existingGui then
+        warn("★ [PPINGYYY] กดเบิ้ลทำไม! ตรวจพบ UI เก่าเปิดไว้อยู่แล้ว ทำการลบตัวใหม่ทิ้งด่วน!")
+        error("Duplicate UI Blocked")
+    end
+end)
+
 local Players = game:GetService("Players")
 local lp = Players.LocalPlayer
 local RS = game:GetService("ReplicatedStorage")
@@ -521,9 +537,9 @@ local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager") 
 local TweenService = game:GetService("TweenService")
 
-print("★ [PPINGYYY] Initializing Full Hub with Animation & Fixed Rock Bar Engine...")
+print("★ [PPINGYYY] Initializing Full Hub Ultimate...")
 
--- ลบ UI เก่าทิ้งกันซ้ำซ้อน
+-- ระบบลบ UI เก่าทิ้งกันซ้ำซ้อน
 pcall(function()
     for _, v in ipairs(game:GetService("CoreGui"):GetChildren()) do 
         if v.Name == "PPINGYYY_Hub_Ultimate" then v:Destroy() end 
@@ -536,7 +552,7 @@ end)
 getgenv().NWKZ_Anchor = false 
 getgenv().NWKZ_AutoCast = false 
 getgenv().PP_Noclip = false 
-getgenv().PP_WalkSpeed = 46 -- ปรับความเร็วเริ่มต้นเป็น 46 ตามสั่ง
+getgenv().PP_WalkSpeed = 46 
 getgenv().PP_FishingThipActive = false
 getgenv().PP_AutoSkillAll = false 
 getgenv().PP_Skill_Z = false 
@@ -587,6 +603,34 @@ Instance.new("UIStroke", Main).Color = Color3.fromRGB(0, 255, 150)
 local TitleBar = Instance.new("Frame", Main) 
 TitleBar.Size = UDim2.new(1, 0, 0, 40) 
 TitleBar.BackgroundTransparency = 1
+
+-- 🖱️ ระบบลากหน้าจอ (Draggable GUI)
+local dragging, dragInput, dragStart, startPos
+TitleBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = Main.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+TitleBar.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        Main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
 
 local TitleText = Instance.new("TextLabel", TitleBar) 
 TitleText.Size = UDim2.new(1, 0, 1, 0) 
@@ -905,7 +949,7 @@ MinBtn.MouseButton1Click:Connect(function()
         Sidebar.Visible = false
         if activePage then activePage.Visible = false end
         TweenService:Create(Main, tweenInfoResize, {Size = MinimizedSize}):Play()
-        MinBtn.Text = "⬜" 
+        MinBtn.Text = "+" 
     else 
         TweenService:Create(Main, tweenInfoResize, {Size = MainSize}):Play()
         task.wait(0.15) 
@@ -934,123 +978,117 @@ CloseBtn.MouseButton1Click:Connect(function()
     sg:Destroy()
 end)
 
--- 🌟 ระบบเล่นเสียงเปิดตัวพร้อมทำอนิเมชั่นสไลด์จอลงมาเท่ๆ
-pcall(function() loadSound:Play() end)
-TweenService:Create(Main, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+-- 🌟 อนิเมชั่นเปิด UI
+TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
     Position = UDim2.new(0.3, 0, 0.3, 0)
 }):Play()
 
+pcall(function()
+    loadSound.Looped = false
+    loadSound:Play()
+end)
+
 task.spawn(function()
-    task.wait(0.5) 
-    pcall(function() TweenService:Create(loadSound, TweenInfo.new(1.5), {Volume = 0}):Play() end)
-    task.wait(1.5)
-    pcall(function() loadSound:Stop() end)
+    task.wait(1.2)
+    pcall(function()
+        local fade = TweenService:Create(loadSound, TweenInfo.new(0.8), {Volume = 0})
+        fade:Play()
+        fade.Completed:Wait()
+        loadSound:Stop()
+    end)
 end)
 
-local dragging, dragInput, dragStart, startPos
-TitleBar.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        dragging = true
-        dragStart = input.Position
-        startPos = Main.Position
-        input.Changed:Connect(function()
-                        if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
-        end)
-    end
-end)
-
-TitleBar.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        dragInput = input
-    end
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-    if input == dragInput and dragging then
-        local delta = input.Position - dragStart
-        Main.Position = UDim2.new(
-            startPos.X.Scale, 
-            startPos.X.Offset + delta.X, 
-            startPos.Y.Scale, 
-            startPos.Y.Offset + delta.Y
-        )
-    end
-end)
-
--- 🎣 ลูปการทำงานหลัก (Auto Cast, Rock Bar, Noclip, WalkSpeed, Skills)
+-- ⚙️ Background Loops
 RunService.Stepped:Connect(function()
-    -- ระบบ Noclip ทะลุกำแพง
-    if getgenv().PP_Noclip and lp.Character then
-        for _, v in ipairs(lp.Character:GetDescendants()) do
-            if v:IsA("BasePart") then
-                v.CanCollide = false
+    pcall(function()
+        local char = lp.Character
+        if char and char:FindFirstChild("Humanoid") then
+            if getgenv().PP_WalkSpeed then
+                char.Humanoid.WalkSpeed = getgenv().PP_WalkSpeed
             end
         end
-    end
+        if getgenv().PP_Noclip and char then
+            for _, part in ipairs(char:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = false
+                end
+            end
+        end
+    end)
+end)
 
-    -- ระบบปรับความเร็วเดิน
-    if lp.Character and lp.Character:FindFirstChild("Humanoid") then
-        lp.Character.Humanoid.WalkSpeed = getgenv().PP_WalkSpeed
+-- Auto Cast Engine
+task.spawn(function()
+    while task.wait(0.3) do
+        if getgenv().NWKZ_AutoCast then
+            pcall(function()
+                if RS:FindFirstChild("Events") and RS.Events:FindFirstChild("Fishing") then
+                    RS.Events.Fishing:FireServer()
+                elseif RS:FindFirstChild("Fishing") then
+                    RS.Fishing:FireServer()
+                end
+            end)
+        end
     end
+end)
 
-    -- ระบบล็อกแถบตกปลา (Rock Bar)
+-- 🚀 Rock Bar / Anchor Engine (ล็อกตรงกลาง 0.5 รัวๆ ตัดหน้าสคริปต์เกม)
+RunService.RenderStepped:Connect(function()
     if getgenv().NWKZ_Anchor then
         pcall(function()
             local playerGui = lp:FindFirstChild("PlayerGui")
-            if playerGui then
-                -- ค้นหา UI แถบตกปลาและล็อกค่า
-                for _, gui in ipairs(playerGui:GetChildren()) do
-                    if gui:FindFirstChild("RockBar") or gui:FindFirstChild("Fishing") then
-                        -- ใส่โค้ดล็อกแถบมินิเกมตกปลาตามโครงสร้างเกม
-                        local bar = gui:FindFirstChild("Bar", true)
-                        if bar then
-                            bar.Position = UDim2.new(0.5, 0, bar.Position.Y.Scale, bar.Position.Y.Offset)
-                        end
+            if not playerGui then return end
+            
+            local fishingUI = (playerGui:FindFirstChild("MainGui") and playerGui.MainGui:FindFirstChild("Fishing")) 
+                or playerGui:FindFirstChild("Fishing") 
+                or playerGui:FindFirstChild("FishingUI")
+            
+            if fishingUI and fishingUI.Visible then
+                local barFrame = fishingUI:FindFirstChild("FishingBar") or fishingUI:FindFirstChild("BarFrame") or fishingUI:FindFirstChild("Bar")
+                if barFrame then
+                    local bar = barFrame:FindFirstChild("Bar") or barFrame:FindFirstChild("Slider") or barFrame:FindFirstChild("Progress") or barFrame:FindFirstChild("Pointer")
+                    if bar and bar:IsA("GuiObject") then
+                        bar.Position = UDim2.new(0.5, 0, bar.Position.Y.Scale, 0)
                     end
                 end
-            end
-        end)
-    end
-end)
-
--- ลูปกดสกิลออโต้และเหวี่ยงเบ็ด
-task.spawn(function()
-    while task.wait(0.2) do
-        pcall(function()
-            if getgenv().NWKZ_AutoCast then
-                if RS:FindFirstChild("Events") and RS.Events:FindFirstChild("Fishing") then
-                    RS.Events.Fishing:FireServer("Cast")
-                elseif RS:FindFirstChild("Fishing") then
-                    RS.Fishing:FireServer("Cast")
+                
+                if RS:FindFirstChild("Fishing") then
+                    RS.Fishing:FireServer("1")
+                elseif RS:FindFirstChild("Events") and RS.Events:FindFirstChild("Fishing") then
+                    RS.Events.Fishing:FireServer("1")
                 end
             end
+        end)
+    end
+end)
 
-            -- ระบบกดสกิลออโต้ (ALL หรือแยกปุ่ม Z, X, C, V)
-            local function fireSkill(key)
-                VirtualInputManager:SendKeyEvent(true, key, false, game)
+-- Auto Skills Engine
+task.spawn(function()
+    while task.wait(0.5) do
+        pcall(function()
+            if getgenv().PP_AutoSkillAll or getgenv().PP_Skill_Z then
+                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Z, false, game)
                 task.wait(0.05)
-                VirtualInputManager:SendKeyEvent(false, key, false, game)
+                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Z, false, game)
             end
-
-            if getgenv().PP_AutoSkillAll then
-                fireSkill(Enum.KeyCode.V)
-                task.wait(0.1)
-                fireSkill(Enum.KeyCode.Z)
-                task.wait(0.1)
-                fireSkill(Enum.KeyCode.X)
-                task.wait(0.1)
-                fireSkill(Enum.KeyCode.C)
-            else
-                if getgenv().PP_Skill_V then fireSkill(Enum.KeyCode.V) end
-                if getgenv().PP_Skill_Z then fireSkill(Enum.KeyCode.Z) end
-                if getgenv().PP_Skill_X then fireSkill(Enum.KeyCode.X) end
-                if getgenv().PP_Skill_C then fireSkill(Enum.KeyCode.C) end
+            if getgenv().PP_AutoSkillAll or getgenv().PP_Skill_X then
+                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.X, false, game)
+                task.wait(0.05)
+                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.X, false, game)
+            end
+            if getgenv().PP_AutoSkillAll or getgenv().PP_Skill_C then
+                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.C, false, game)
+                task.wait(0.05)
+                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.C, false, game)
+            end
+            if getgenv().PP_AutoSkillAll or getgenv().PP_Skill_V then
+                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.V, false, game)
+                task.wait(0.05)
+                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.V, false, game)
             end
         end)
     end
 end)
 
-print("★ [PPINGYYY] Hub Successfully Loaded & Fully Fixed!")
+print("★ [PPINGYYY] Ultimate Hub Loaded Successfully & Rock Bar Fixed at Center (RenderStepped)!")
 
